@@ -56,6 +56,9 @@ importers:
       tsx:
         specifier: 4.19.2
         version: 4.19.2
+      zod:
+        specifier: ^3.25.49
+        version: 3.25.49
     devDependencies:
       '@ts-safeql/eslint-plugin':
         specifier: ^3.6.12

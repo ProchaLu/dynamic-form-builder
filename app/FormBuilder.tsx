@@ -152,7 +152,24 @@ export default function FormBuilder() {
         )}
 
         <div className="mt-6 flex justify-end">
-          <button>Save</button>
+          <button
+            onClick={async () => {
+              const response = await fetch('/api/forms', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  name: formName,
+                  fields: fields,
+                }),
+              });
+              const data = await response.json();
+              console.log(data);
+            }}
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>
