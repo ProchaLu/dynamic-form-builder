@@ -1,2 +1,4 @@
 onlyBuiltDependencies:
+  - esbuild
+  - libpg-query
   - sharp
