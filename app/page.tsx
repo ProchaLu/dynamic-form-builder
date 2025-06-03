@@ -1,3 +1,5 @@
+import FormBuilder from './FormBuilder';
+
 export default function Home() {
   return (
     <div className="container mx-auto py-10">
@@ -6,6 +8,7 @@ export default function Home() {
         Create custom forms by adding, removing, and reordering fields. Supports
         text, number, date, and dropdown fields.
       </p>
+      <FormBuilder />
     </div>
   );
 }
