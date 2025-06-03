@@ -74,11 +74,12 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
                 htmlFor={`${field.id}-label`}
                 className="block text-sm font-medium text-gray-700"
               >
-                Field Label
+                Label
               </label>
               <input
                 id={`${field.id}-label`}
                 value={field.label}
+                required
                 onChange={(event) =>
                   onUpdate({ label: event.currentTarget.value })
                 }
