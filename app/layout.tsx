@@ -19,7 +19,11 @@ export const metadata = {
     'Create custom forms by adding, removing, and reordering fields. Supports text, number, date, and dropdown fields',
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body
