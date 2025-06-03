@@ -8,6 +8,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   arrayMove,
   SortableContext,
@@ -15,9 +16,11 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useState } from 'react';
+import { Input } from './components/Input';
 import FieldTypeSelector from './FieldTypeSelector';
+import FormFieldItem from './FormFieldItem';
 
-type Field = {
+export type Field = {
   id: string;
   type: string;
   label: string;
@@ -50,6 +53,14 @@ type Field = {
 
 export default function FormBuilder() {
   const [fields, setFields] = useState<Field[]>([]);
+  const [formName, setFormName] = useState('My Form');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   function addField(type: string) {
     const newField: Field = {
@@ -92,7 +103,58 @@ export default function FormBuilder() {
 
   return (
     <div>
-      <FieldTypeSelector />
+      <div className="mb-6">
+        <label htmlFor="form-name" className="font-bold">
+          Form Name
+        </label>
+        <Input
+          id="form-name"
+          value={formName}
+          name="formName"
+          onChange={(event) => setFormName(event.currentTarget.value)}
+          className="mt-1"
+          required
+        />
+      </div>
+      <FieldTypeSelector addField={addField} />
+      <div className="md:col-span-3">
+        <h2 className="text-xl font-semibold mb-4 text-black">
+          Form Structure
+        </h2>
+
+        {fields.length === 0 ? (
+          <div className="border border-dashed border-gray-300 rounded-md p-8 text-center text-gray-500">
+            Add fields to your form by selecting a type
+          </div>
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+            modifiers={[restrictToVerticalAxis]}
+          >
+            <SortableContext
+              items={fields.map((field) => field.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-3">
+                {fields.map((field) => (
+                  <FormFieldItem
+                    key={`field-${field.id}`}
+                    field={field}
+                    onUpdate={(updates) => updateField(field.id, updates)}
+                    onRemove={() => removeField(field.id)}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
+
+        <div className="mt-6 flex justify-end">
+          <button>Save</button>
+        </div>
+      </div>
     </div>
   );
 }
