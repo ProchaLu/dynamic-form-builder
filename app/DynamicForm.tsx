@@ -4,8 +4,8 @@ type Field = {
   id: string;
   type: string;
   label: string;
-  placeholder: string;
   required: boolean;
+  placeholder?: string;
   options?: string[];
   value?: any;
 };
@@ -25,7 +25,7 @@ export function DynamicForm({ fields }: Props) {
                 <label>{field.label}</label>
                 <input
                   type="text"
-                  placeholder={field.placeholder}
+                  placeholder={field.placeholder || 'Enter text'}
                   required={field.required}
                   name={field.id}
                   className="border p-2 rounded w-full"
@@ -66,8 +66,8 @@ export function DynamicForm({ fields }: Props) {
                   name={field.id}
                   className="border p-2 rounded w-full"
                 >
-                  {field.options?.map((option, idx) => (
-                    <option key={idx} value={option}>
+                  {field.options?.map((option, index) => (
+                    <option key={`option-${index}`} value={option}>
                       {option}
                     </option>
                   ))}

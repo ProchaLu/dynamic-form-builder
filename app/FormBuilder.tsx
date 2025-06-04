@@ -32,7 +32,6 @@ export type Field = {
   // Text field validation
   minLength?: number;
   maxLength?: number;
-  validation?: 'email' | 'phone' | 'url' | 'birthdate';
   pattern?: string;
   patternMessage?: string;
 
@@ -157,6 +156,7 @@ export default function FormBuilder() {
 
           <div className="mt-6 flex justify-end">
             <button
+              disabled={fields.length === 0}
               onClick={async () => {
                 const response = await fetch('/api/forms', {
                   method: 'POST',
@@ -171,7 +171,7 @@ export default function FormBuilder() {
                 setFormName('My Form');
                 router.refresh();
               }}
-              className="w-full md:w-64 px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full"
+              className={`w-full md:w-64 px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full ${fields.length === 0 && 'opacity-50 cursor-not-allowed hover:from-blue-600 hover:to-blue-500'}`}
             >
               Save
             </button>

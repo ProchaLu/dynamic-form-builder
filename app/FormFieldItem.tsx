@@ -102,6 +102,7 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
               <input
                 id={`${field.id}-label`}
                 value={field.label}
+                placeholder="Enter field label..."
                 required
                 onChange={(event) =>
                   onUpdate({ label: event.currentTarget.value })
@@ -120,6 +121,7 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
               <input
                 id={`${field.id}-placeholder`}
                 value={field.placeholder}
+                placeholder="Enter placeholder text..."
                 onChange={(event) =>
                   onUpdate({ placeholder: event.currentTarget.value })
                 }

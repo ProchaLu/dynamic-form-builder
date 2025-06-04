@@ -6,7 +6,7 @@ const fieldSchema = z.object({
   id: z.string().uuid(),
   type: z.enum(['text', 'number', 'date', 'dropdown']),
   label: z.string().min(1),
-  placeholder: z.string(),
+  placeholder: z.string().optional(),
   required: z.boolean(),
   options: z.array(z.string()).optional(),
   value: z.any().optional(),
