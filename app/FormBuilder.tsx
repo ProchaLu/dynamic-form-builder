@@ -248,7 +248,6 @@ export default function FormBuilder() {
                     }
                   });
                   setFieldErrors(fieldErrors);
-                  console.log(fieldErrors);
                   return;
                 }
 
