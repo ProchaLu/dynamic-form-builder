@@ -30,7 +30,7 @@ export async function POST(
 ): Promise<NextResponse<FormBodyPost>> {
   const requestBody = await request.json();
 
-  // validate information from client
+  // validate information from client with zod
   const result = formSchema.safeParse(requestBody);
 
   console.log(result.error);

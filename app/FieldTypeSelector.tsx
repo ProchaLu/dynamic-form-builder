@@ -38,7 +38,7 @@ const fieldTypes = [
 
 export default function FieldTypeSelector({ addField }: Props) {
   return (
-    <section className="rounded-lg border bg-white p-6 shadow-sm">
+    <section className="rounded-lg border bg-white p-4 sm:p-6 shadow-sm w-full max-w-full md:max-w-xs">
       <header className="mb-4">
         <h2 className="text-lg font-semibold">Field Types</h2>
       </header>
@@ -51,7 +51,7 @@ export default function FieldTypeSelector({ addField }: Props) {
               type="button"
             >
               <fieldType.icon />
-              <div>
+              <div className="min-w-0">
                 <span className="block font-medium text-gray-900">
                   {fieldType.label}
                 </span>

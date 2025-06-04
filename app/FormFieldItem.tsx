@@ -31,14 +31,16 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
 
   function addOption() {
     if (newOption.trim()) {
-      onUpdate({ options: [...(field.options || []), newOption.trim()] });
+      const existingOptions = field.options || [];
+      onUpdate({ options: [...existingOptions, newOption.trim()] });
       setNewOption('');
     }
   }
 
   function removeOption(value: number) {
+    const existingOptions = field.options || [];
     onUpdate({
-      options: (field.options || []).filter((option, index) => index !== value),
+      options: existingOptions.filter((option, index) => index !== value),
     });
   }
 
@@ -139,7 +141,7 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
               <ul className="space-y-2" id="dropdown-options">
                 {field.options?.map((option, index) => (
                   <li
-                    key={`option-${option}-${index}`}
+                    key={`option-${field.id}-${index}`}
                     className="flex items-center gap-2"
                   >
                     <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
@@ -188,10 +190,9 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
                     className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <button
-                    type="button"
-                    onClick={addOption}
+                    type="submit"
                     className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-                    disabled={!newOption.trim()}
+                    disabled={!newOption}
                   >
                     +
                   </button>

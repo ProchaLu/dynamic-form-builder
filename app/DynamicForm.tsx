@@ -1,3 +1,5 @@
+'use client';
+
 type Field = {
   id: string;
   type: string;
@@ -14,7 +16,7 @@ type Props = {
 
 export function DynamicForm({ fields }: Props) {
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
       {fields.map((field) => {
         switch (field.type) {
           case 'text':
@@ -76,7 +78,10 @@ export function DynamicForm({ fields }: Props) {
             return null;
         }
       })}
-      <button type="submit" className="bg-black text-white p-2 rounded">
+      <button
+        type="submit"
+        className="w-full md:w-64 px-5 py-2.5 font-medium text-white bg-black hover:bg-neutral-900 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-black transition rounded-full"
+      >
         Submit
       </button>
     </form>
