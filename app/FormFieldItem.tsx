@@ -10,9 +10,17 @@ type Props = {
   field: Field;
   onUpdate: (updates: Partial<Field>) => void;
   onRemove: () => void;
+  labelError?: string;
+  optionsError?: string;
 };
 
-export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
+export default function FormFieldItem({
+  field,
+  onUpdate,
+  onRemove,
+  labelError,
+  optionsError,
+}: Props) {
   const {
     attributes,
     listeners,
@@ -107,8 +115,15 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
                 onChange={(event) =>
                   onUpdate({ label: event.currentTarget.value })
                 }
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full rounded border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  labelError
+                    ? 'border-red-500 ring-2 ring-red-400'
+                    : 'border-gray-300'
+                }`}
               />
+              {labelError && (
+                <div className="text-red-600 text-xs mt-1">{labelError}</div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -131,76 +146,93 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
           </div>
 
           {field.type === 'dropdown' && (
-            <section className="space-y-4">
-              <label
-                htmlFor="dropdown-options"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Dropdown Options
-              </label>
+            <>
+              <section className="space-y-4">
+                <label
+                  htmlFor="dropdown-options"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Dropdown Options
+                </label>
 
-              {/* Existing options */}
-              <ul className="space-y-2" id="dropdown-options">
-                {field.options?.map((option, index) => (
-                  <li
-                    key={`option-${field.id}-${index}`}
-                    className="flex items-center gap-2"
+                {/* Existing options */}
+                <ul className="space-y-2" id="dropdown-options">
+                  {field.options?.map((option, index) => {
+                    const isThisOptionEmpty =
+                      optionsError &&
+                      optionsError.toLowerCase().includes('empty string') &&
+                      (!option || option.trim() === '');
+                    return (
+                      <li
+                        key={`option-${field.id}-${index}`}
+                        className="flex items-center gap-2"
+                      >
+                        <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
+                          {index + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={option}
+                          onChange={(event) =>
+                            updateOption(index, event.currentTarget.value)
+                          }
+                          placeholder={`Option ${index + 1}`}
+                          className={`flex-1 rounded border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            isThisOptionEmpty
+                              ? 'border-red-500 ring-2 ring-red-400'
+                              : 'border-gray-300'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeOption(index)}
+                          className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100"
+                          aria-label={`Remove option ${index + 1}`}
+                        >
+                          ×
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {optionsError && (
+                  <div className="text-red-600 text-xs mt-1">
+                    {optionsError}
+                  </div>
+                )}
+
+                {/* Add new option */}
+                <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                  <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded text-sm font-medium text-blue-600">
+                    +
+                  </div>
+                  <form
+                    className="flex items-center gap-2 w-full"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      addOption();
+                    }}
                   >
-                    <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
-                      {index + 1}
-                    </span>
                     <input
                       type="text"
-                      value={option}
+                      value={newOption}
                       onChange={(event) =>
-                        updateOption(index, event.currentTarget.value)
+                        setNewOption(event.currentTarget.value)
                       }
-                      placeholder={`Option ${index + 1}`}
+                      placeholder="Add new option..."
                       className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
-                      type="button"
-                      onClick={() => removeOption(index)}
-                      className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100"
-                      aria-label={`Remove option ${index + 1}`}
+                      type="submit"
+                      className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                      disabled={!newOption}
                     >
-                      ×
+                      +
                     </button>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Add new option */}
-              <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
-                <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded text-sm font-medium text-blue-600">
-                  +
+                  </form>
                 </div>
-                <form
-                  className="flex items-center gap-2 w-full"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    addOption();
-                  }}
-                >
-                  <input
-                    type="text"
-                    value={newOption}
-                    onChange={(event) =>
-                      setNewOption(event.currentTarget.value)
-                    }
-                    placeholder="Add new option..."
-                    className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-                    disabled={!newOption}
-                  >
-                    +
-                  </button>
-                </form>
-              </div>
-            </section>
+              </section>
+            </>
           )}
         </div>
       </div>

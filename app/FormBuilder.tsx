@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { z } from 'zod';
 import { Input } from './components/Input';
 import FieldTypeSelector from './FieldTypeSelector';
 import FormFieldItem from './FormFieldItem';
@@ -28,19 +29,16 @@ export type Field = {
   required: boolean;
   options?: string[];
   value?: any;
-
   // Text field validation
   minLength?: number;
   maxLength?: number;
   pattern?: string;
   patternMessage?: string;
-
   // Number field validation
   min?: number;
   max?: number;
   integerOnly?: boolean;
   positiveOnly?: boolean;
-
   // Date field validation
   minDate?: string;
   maxDate?: string;
@@ -50,9 +48,48 @@ export type Field = {
   maxAge?: number;
 };
 
+type FieldErrorMap = { [id: string]: { label?: string; options?: string } };
+
+// This schema defines the structure of a form with fields
+const fieldSchema = z
+  .object({
+    id: z.string(),
+    type: z.enum(['text', 'number', 'date', 'dropdown']),
+    label: z.string().min(1, 'Label cannot be empty'),
+    placeholder: z.string(),
+    required: z.boolean(),
+    options: z.array(z.string()).optional(),
+    value: z.any(),
+  })
+  .superRefine((field, context) => {
+    if (field.type === 'dropdown') {
+      if (!field.options || field.options.length === 0) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Dropdown options cannot be empty',
+          path: ['options'],
+        });
+      } else if (field.options.some((option) => !option.trim())) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Dropdown options cannot be empty strings',
+          path: ['options'],
+        });
+      }
+    }
+  });
+
+const formSchema = z.object({
+  name: z.string().min(1, 'Form name cannot be empty'),
+  fields: z.array(fieldSchema),
+});
+
 export default function FormBuilder() {
   const [fields, setFields] = useState<Field[]>([]);
   const [formName, setFormName] = useState('My Form');
+  const [formNameError, setFormNameError] = useState<string | null>(null);
+
+  const [fieldErrors, setFieldErrors] = useState<FieldErrorMap>({});
 
   const router = useRouter();
 
@@ -83,12 +120,28 @@ export default function FormBuilder() {
         field.id === id ? { ...field, ...updatedField } : field,
       ),
     );
+    if (updatedField.label !== undefined) {
+      // Remove error for this field if label is updated
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
+      });
+    }
   }
 
   function removeField(id: string) {
     setFields(fields.filter((field) => field.id !== id));
+    // Remove error for this field if label is updated
+    setFieldErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[id];
+      return copy;
+    });
   }
 
+  // Handle drag and drop reordering of fields with dnd-kit/sortable
+  // https://docs.dndkit.com/presets/sortable
   function handleDragEnd(event: any) {
     const { active, over } = event;
 
@@ -112,10 +165,17 @@ export default function FormBuilder() {
           id="form-name"
           value={formName}
           name="formName"
-          onChange={(event) => setFormName(event.currentTarget.value)}
-          className="mt-1"
-          required
+          onChange={(event) => {
+            setFormName(event.currentTarget.value);
+            setFormNameError(null);
+          }}
+          className={`mt-1 ${
+            formNameError ? 'border-red-500 ring-2 ring-red-400' : ''
+          }`}
         />
+        {formNameError && (
+          <div className="text-red-600 text-sm mt-1">{formNameError}</div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-6">
@@ -147,6 +207,8 @@ export default function FormBuilder() {
                       field={field}
                       onUpdate={(updates) => updateField(field.id, updates)}
                       onRemove={() => removeField(field.id)}
+                      labelError={fieldErrors[field.id]?.label}
+                      optionsError={fieldErrors[field.id]?.options}
                     />
                   ))}
                 </div>
@@ -158,6 +220,38 @@ export default function FormBuilder() {
             <button
               disabled={fields.length === 0}
               onClick={async () => {
+                setFormNameError(null);
+                setFieldErrors({});
+
+                const result = formSchema.safeParse({ name: formName, fields });
+
+                if (!result.success) {
+                  // Form name error
+                  const formNameError =
+                    result.error.formErrors.fieldErrors.name?.[0];
+                  if (formNameError) {
+                    setFormNameError(formNameError);
+                  }
+
+                  // Field errors
+                  const fieldErrors: FieldErrorMap = {};
+                  result.error.errors.forEach((error) => {
+                    if (error.path[0] === 'fields') {
+                      const index = error.path[1];
+                      const key = error.path[2];
+                      const fieldId = fields[index].id;
+                      if (!fieldErrors[fieldId]) fieldErrors[fieldId] = {};
+                      if (key === 'label')
+                        fieldErrors[fieldId].label = error.message;
+                      if (key === 'options')
+                        fieldErrors[fieldId].options = error.message;
+                    }
+                  });
+                  setFieldErrors(fieldErrors);
+                  console.log(fieldErrors);
+                  return;
+                }
+
                 const response = await fetch('/api/forms', {
                   method: 'POST',
                   headers: {
@@ -169,9 +263,14 @@ export default function FormBuilder() {
                 console.log(data);
                 setFields([]);
                 setFormName('My Form');
+                setFormNameError(null);
+                setFieldErrors({});
                 router.refresh();
               }}
-              className={`w-full md:w-64 px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full ${fields.length === 0 && 'opacity-50 cursor-not-allowed hover:from-blue-600 hover:to-blue-500'}`}
+              className={`w-full md:w-64 px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full ${
+                fields.length === 0 &&
+                'opacity-50 cursor-not-allowed hover:from-blue-600 hover:to-blue-500'
+              }`}
             >
               Save
             </button>
