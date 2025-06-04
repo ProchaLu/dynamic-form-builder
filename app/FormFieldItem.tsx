@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import type { Field } from './FormBuilder';
 
 type Props = {
@@ -20,12 +21,32 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
     transition,
     isDragging,
   } = useSortable({ id: field.id });
+  const [newOption, setNewOption] = useState('');
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
+
+  function addOption() {
+    if (newOption.trim()) {
+      onUpdate({ options: [...(field.options || []), newOption.trim()] });
+      setNewOption('');
+    }
+  }
+
+  function removeOption(value: number) {
+    onUpdate({
+      options: (field.options || []).filter((option, index) => index !== value),
+    });
+  }
+
+  function updateOption(index: number, value: string) {
+    const updatedOptions = [...(field.options || [])];
+    updatedOptions[index] = value;
+    onUpdate({ options: updatedOptions });
+  }
 
   return (
     <section
@@ -37,7 +58,7 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
         {...attributes}
         {...listeners}
         className="absolute left-2 top-0 bottom-0 flex items-center cursor-grab"
-        aria-label="Drag to reorder"
+        aria-label="drag to reorder"
       >
         <GripVertical className="h-5 w-5 text-gray-400" />
       </div>
@@ -61,7 +82,7 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
             type="button"
             onClick={onRemove}
             className="rounded p-1 hover:bg-gray-100"
-            aria-label="Remove field"
+            aria-label="remove field"
           >
             <Trash2 className="h-4 w-4 text-red-500" />
           </button>
@@ -106,27 +127,77 @@ export default function FormFieldItem({ field, onUpdate, onRemove }: Props) {
           </div>
 
           {field.type === 'dropdown' && (
-            <div className="space-y-2">
+            <section className="space-y-4">
               <label
-                htmlFor={`${field.id}-options`}
+                htmlFor="dropdown-options"
                 className="block text-sm font-medium text-gray-700"
               >
-                Options (one per line)
+                Dropdown Options
               </label>
-              <textarea
-                id={`${field.id}-options`}
-                value={field.options?.join('\n')}
-                onChange={(event) =>
-                  onUpdate({
-                    options: event.currentTarget.value
-                      .split('\n')
-                      // filter out empty lines
-                      .filter((option) => option.trim() !== ''),
-                  })
-                }
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
-              />
-            </div>
+
+              {/* Existing options */}
+              <ul className="space-y-2" id="dropdown-options">
+                {field.options?.map((option, index) => (
+                  <li
+                    key={`option-${option}-${index}`}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
+                      {index + 1}
+                    </span>
+                    <input
+                      type="text"
+                      value={option}
+                      onChange={(event) =>
+                        updateOption(index, event.currentTarget.value)
+                      }
+                      placeholder={`Option ${index + 1}`}
+                      className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeOption(index)}
+                      className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100"
+                      aria-label={`Remove option ${index + 1}`}
+                    >
+                      ×
+                    </button>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Add new option */}
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded text-sm font-medium text-blue-600">
+                  +
+                </div>
+                <form
+                  className="flex items-center gap-2 w-full"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    addOption();
+                  }}
+                >
+                  <input
+                    type="text"
+                    value={newOption}
+                    onChange={(event) =>
+                      setNewOption(event.currentTarget.value)
+                    }
+                    placeholder="Add new option..."
+                    className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={addOption}
+                    className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                    disabled={!newOption.trim()}
+                  >
+                    +
+                  </button>
+                </form>
+              </div>
+            </section>
           )}
         </div>
       </div>

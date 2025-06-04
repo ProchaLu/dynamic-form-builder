@@ -14,13 +14,13 @@ const fieldTypes = [
     type: 'text',
     label: 'Text Field',
     icon: TextIcon,
-    description: 'Single line text input',
+    description: 'Text input',
   },
   {
     type: 'number',
     label: 'Number Field',
     icon: Hash,
-    description: 'Numeric input field',
+    description: 'Numeric input',
   },
   {
     type: 'date',
