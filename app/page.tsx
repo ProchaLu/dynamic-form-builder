@@ -23,7 +23,7 @@ export default async function Home() {
         <div className="space-y-4">
           {allFormTitlesWithDates.map((titleWithDate) => (
             <div
-              key={``}
+              key={`form-${titleWithDate.id}`}
               className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition"
             >
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
