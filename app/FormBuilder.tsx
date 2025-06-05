@@ -18,7 +18,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
 import type { Field } from '../migrations/00000-forms';
-import { Input } from './components/Input';
 import FieldTypeSelector from './FieldTypeSelector';
 import FormFieldItem from './FormFieldItem';
 
@@ -135,16 +134,19 @@ export default function FormBuilder() {
         <label htmlFor="form-name" className="font-bold">
           Form Name
         </label>
-        <Input
+        <input
           id="form-name"
-          value={formName}
           name="formName"
+          value={formName}
           onChange={(event) => {
             setFormName(event.currentTarget.value);
             setFormNameError(null);
           }}
-          className={`mt-1 ${
-            formNameError ? 'border-red-500 ring-2 ring-red-400' : ''
+          placeholder="Form name"
+          className={`w-full rounded-md px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${
+            formNameError
+              ? 'border-red-500 ring-2 ring-red-400'
+              : 'border border-gray-300'
           }`}
         />
         {formNameError && (
