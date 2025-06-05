@@ -19,7 +19,6 @@ type Props = {
 
 export function DynamicForm({ fields, formId }: Props) {
   const [formData, setFormData] = useState<Record<string, any>>({});
-  const [submitted, setSubmitted] = useState(false);
   const router = useRouter();
 
   function handleChange(id: string, value: any) {
@@ -36,6 +35,8 @@ export function DynamicForm({ fields, formId }: Props) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
+
+        router.refresh();
       }}
     >
       {fields.map((field) => {
@@ -82,7 +83,7 @@ export function DynamicForm({ fields, formId }: Props) {
 
       <button
         type="submit"
-        className="w-full md:w-64 px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full"
+        className="w-full px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full"
       >
         Submit
       </button>
