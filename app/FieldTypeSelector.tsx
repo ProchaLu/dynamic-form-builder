@@ -38,7 +38,7 @@ const fieldTypes = [
 
 export default function FieldTypeSelector({ addField }: Props) {
   return (
-    <section className="rounded-lg border bg-white p-4 sm:p-6 shadow-sm w-full max-w-full md:max-w-xs">
+    <section className="rounded-lg bg-white p-4 sm:p-6 w-full max-w-full md:max-w-xs">
       <header className="mb-4">
         <h2 className="text-lg font-semibold">Field Types</h2>
       </header>
