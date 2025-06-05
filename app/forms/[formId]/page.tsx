@@ -13,9 +13,9 @@ export const metadata = {
 };
 
 type Props = {
-  params: {
+  params: Promise<{
     formId: string;
-  };
+  }>;
 };
 
 export default async function FormPage(props: Props) {

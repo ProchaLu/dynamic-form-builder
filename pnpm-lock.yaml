@@ -81,9 +81,6 @@ importers:
       eslint-config-upleveled:
         specifier: ^9.2.3
         version: 9.2.3(@babel/core@7.27.4)(@types/node@22.15.29)(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(eslint@9.28.0(jiti@1.21.7))(globals@15.15.0)(typescript@5.8.3)
-      libpg-query:
-        specifier: ^16.3.0
-        version: 16.3.0(encoding@0.1.13)
       postcss:
         specifier: ^8
         version: 8.5.4

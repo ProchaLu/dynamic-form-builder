@@ -215,12 +215,17 @@ export default function FormBuilder() {
                     if (error.path[0] === 'fields') {
                       const index = error.path[1];
                       const key = error.path[2];
-                      const fieldId = fields[index].id;
-                      if (!fieldErrors[fieldId]) fieldErrors[fieldId] = {};
-                      if (key === 'label')
-                        fieldErrors[fieldId].label = error.message;
-                      if (key === 'options')
-                        fieldErrors[fieldId].options = error.message;
+                      if (
+                        typeof index === 'number' &&
+                        fields[index] !== undefined
+                      ) {
+                        const fieldId = fields[index].id;
+                        if (!fieldErrors[fieldId]) fieldErrors[fieldId] = {};
+                        if (key === 'label')
+                          fieldErrors[fieldId].label = error.message;
+                        if (key === 'options')
+                          fieldErrors[fieldId].options = error.message;
+                      }
                     }
                   });
                   setFieldErrors(fieldErrors);

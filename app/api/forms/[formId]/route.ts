@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createFormSubmission } from '../../../../database/forms';
 
-export const formSchema = z.record(z.string());
+const formSubmissionSchema = z.record(z.string().uuid(), z.string());
 
 export type FormBodyPost =
   | {
@@ -25,7 +25,9 @@ export async function POST(
   const formId = Number((await params).formId);
   const requestBody = await request.json();
 
-  const result = formSchema.safeParse(requestBody);
+  console.log(requestBody);
+
+  const result = formSubmissionSchema.safeParse(requestBody);
 
   if (!result.success) {
     return NextResponse.json(
