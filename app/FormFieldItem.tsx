@@ -5,12 +5,12 @@ import { CSS } from '@dnd-kit/utilities';
 import { Accordion } from '@radix-ui/react-accordion';
 import { GripVertical, Settings, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import type { Field } from '../migrations/00000-forms';
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from './components/Accordion';
-import type { Field } from './FormBuilder';
 
 type Props = {
   field: Field;
@@ -54,7 +54,9 @@ export default function FormFieldItem({
   function removeOption(value: number) {
     const existingOptions = field.options || [];
     onUpdate({
-      options: existingOptions.filter((option, index) => index !== value),
+      options: existingOptions.filter(
+        (option: string | undefined, index: number) => index !== value,
+      ),
     });
   }
 
@@ -109,7 +111,7 @@ export default function FormFieldItem({
             <div className="space-y-2">
               <label
                 htmlFor={`${field.id}-label`}
-                className="block text-sm font-medium text-gray-700"
+                className="block text-m font-semibold text-gray-700"
               >
                 Label
               </label>
@@ -121,7 +123,7 @@ export default function FormFieldItem({
                 onChange={(event) =>
                   onUpdate({ label: event.currentTarget.value })
                 }
-                className={`w-full rounded border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" ${
                   labelError
                     ? 'border-red-500 ring-2 ring-red-400'
                     : 'border-gray-300'
@@ -135,7 +137,7 @@ export default function FormFieldItem({
             <div className="space-y-2">
               <label
                 htmlFor={`${field.id}-placeholder`}
-                className="block text-sm font-medium text-gray-700"
+                className="block text-m font-semibold text-gray-700"
               >
                 Placeholder
               </label>
@@ -146,7 +148,7 @@ export default function FormFieldItem({
                 onChange={(event) =>
                   onUpdate({ placeholder: event.currentTarget.value })
                 }
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -156,50 +158,52 @@ export default function FormFieldItem({
               <section className="space-y-4">
                 <label
                   htmlFor="dropdown-options"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-m font-semibold text-gray-700"
                 >
                   Dropdown Options
                 </label>
 
                 {/* Existing options */}
                 <ul className="space-y-2" id="dropdown-options">
-                  {field.options?.map((option, index) => {
-                    const isThisOptionEmpty =
-                      optionsError &&
-                      optionsError.toLowerCase().includes('empty string') &&
-                      (!option || option.trim() === '');
-                    return (
-                      <li
-                        key={`option-${field.id}-${index}`}
-                        className="flex items-center gap-2"
-                      >
-                        <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
-                          {index + 1}
-                        </span>
-                        <input
-                          type="text"
-                          value={option}
-                          onChange={(event) =>
-                            updateOption(index, event.currentTarget.value)
-                          }
-                          placeholder={`Option ${index + 1}`}
-                          className={`flex-1 rounded border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            isThisOptionEmpty
-                              ? 'border-red-500 ring-2 ring-red-400'
-                              : 'border-gray-300'
-                          }`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeOption(index)}
-                          className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100"
-                          aria-label={`Remove option ${index + 1}`}
+                  {field.options?.map(
+                    (option: string | undefined, index: number) => {
+                      const isThisOptionEmpty =
+                        optionsError &&
+                        optionsError.toLowerCase().includes('empty string') &&
+                        (!option || option.trim() === '');
+                      return (
+                        <li
+                          key={`option-${field.id}-${index}`}
+                          className="flex items-center gap-2"
                         >
-                          ×
-                        </button>
-                      </li>
-                    );
-                  })}
+                          <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
+                            {index + 1}
+                          </span>
+                          <input
+                            type="text"
+                            value={option}
+                            onChange={(event) =>
+                              updateOption(index, event.currentTarget.value)
+                            }
+                            placeholder={`Option ${index + 1}`}
+                            className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" ${
+                              isThisOptionEmpty
+                                ? 'border-red-500 ring-2 ring-red-400'
+                                : 'border-gray-300'
+                            }`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeOption(index)}
+                            className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100"
+                            aria-label={`Remove option ${index + 1}`}
+                          >
+                            ×
+                          </button>
+                        </li>
+                      );
+                    },
+                  )}
                 </ul>
                 {optionsError && (
                   <div className="text-red-600 text-xs mt-1">
@@ -226,7 +230,7 @@ export default function FormFieldItem({
                         setNewOption(event.currentTarget.value)
                       }
                       placeholder="Add new option..."
-                      className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                     <button
                       type="submit"
@@ -241,42 +245,46 @@ export default function FormFieldItem({
             </>
           )}
 
-          {/* Add custom validation settings */}
+          {/* Custom validation settings */}
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="validation">
               <AccordionTrigger className="py-2">
                 <div className="flex items-center gap-2">
                   <Settings />
-                  <span className="text-black">Validation Settings</span>
+                  <span className="text-black text-m font-semibold">
+                    Validation Settings
+                  </span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 pt-2">
-                  <div className="flex items-center space-x-2">
+                  <label
+                    htmlFor={`${field.id}-required`}
+                    className="inline-flex items-center cursor-pointer select-none"
+                  >
                     <input
                       type="checkbox"
                       id={`${field.id}-required`}
                       checked={field.required}
-                      onChange={(event) =>
-                        onUpdate({ required: event.currentTarget.checked })
+                      onChange={(e) =>
+                        onUpdate({ required: e.currentTarget.checked })
                       }
+                      className="sr-only peer"
                     />
-                    <label
-                      htmlFor={`${field.id}-required`}
-                      className="form-label"
-                    >
+                    <div className="relative w-11 h-6 bg-gray-400 rounded-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none" />
+                    <span className="ml-3 text-sm font-medium text-gray-900">
                       Required field
-                    </label>
-                  </div>
+                    </span>
+                  </label>
 
                   {/* Text field validation options */}
                   {field.type === 'text' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
                           <label
                             htmlFor={`${field.id}-min-length`}
-                            className="form-label"
+                            className="block text-sm font-semibold text-gray-700 mb-1"
                           >
                             Minimum Length
                           </label>
@@ -284,21 +292,22 @@ export default function FormFieldItem({
                             id={`${field.id}-min-length`}
                             type="number"
                             min="0"
-                            value={field.minLength || ''}
-                            onChange={(e) =>
+                            value={field.minLength ?? ''}
+                            onChange={(event) =>
                               onUpdate({
-                                minLength: e.target.value
-                                  ? Number.parseInt(e.target.value)
+                                minLength: event.currentTarget.value
+                                  ? Number(event.currentTarget.value)
                                   : undefined,
                               })
                             }
-                            className="form-input"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            placeholder="enter minimum text length"
                           />
                         </div>
-                        <div className="space-y-2">
+                        <div>
                           <label
                             htmlFor={`${field.id}-max-length`}
-                            className="form-label"
+                            className="block text-sm font-semibold text-gray-700 mb-1"
                           >
                             Maximum Length
                           </label>
@@ -306,67 +315,30 @@ export default function FormFieldItem({
                             id={`${field.id}-max-length`}
                             type="number"
                             min="0"
-                            value={field.maxLength || ''}
-                            onChange={(e) =>
+                            value={field.maxLength ?? ''}
+                            onChange={(event) =>
                               onUpdate({
-                                maxLength: e.target.value
-                                  ? Number.parseInt(e.target.value)
+                                maxLength: event.currentTarget.value
+                                  ? Number(event.currentTarget.value)
                                   : undefined,
                               })
                             }
-                            className="form-input"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            placeholder="enter maximum text length"
                           />
                         </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label
-                          htmlFor={`${field.id}-pattern`}
-                          className="form-label"
-                        >
-                          Custom Pattern (RegEx)
-                        </label>
-                        <input
-                          id={`${field.id}-pattern`}
-                          value={field.pattern || ''}
-                          onChange={(e) =>
-                            onUpdate({ pattern: e.target.value || undefined })
-                          }
-                          placeholder="e.g. ^[a-zA-Z0-9]+$"
-                          className="form-input"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label
-                          htmlFor={`${field.id}-pattern-message`}
-                          className="form-label"
-                        >
-                          Pattern Error Message
-                        </label>
-                        <input
-                          id={`${field.id}-pattern-message`}
-                          value={field.patternMessage || ''}
-                          onChange={(e) =>
-                            onUpdate({
-                              patternMessage: e.target.value || undefined,
-                            })
-                          }
-                          placeholder="e.g. Only alphanumeric characters allowed"
-                          className="form-input"
-                        />
                       </div>
                     </div>
                   )}
 
                   {/* Number field validation options */}
                   {field.type === 'number' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
                           <label
                             htmlFor={`${field.id}-min-value`}
-                            className="form-label"
+                            className="block text-sm font-semibold text-gray-700 mb-1"
                           >
                             Minimum Value
                           </label>
@@ -374,20 +346,22 @@ export default function FormFieldItem({
                             id={`${field.id}-min-value`}
                             type="number"
                             value={field.min ?? ''}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               onUpdate({
-                                min: e.target.value
-                                  ? Number.parseFloat(e.target.value)
+                                min: event.currentTarget.value
+                                  ? Number.parseFloat(event.currentTarget.value)
                                   : undefined,
                               })
                             }
-                            className="form-input"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            placeholder="enter minimum value"
                           />
                         </div>
-                        <div className="space-y-2">
+
+                        <div>
                           <label
                             htmlFor={`${field.id}-max-value`}
-                            className="form-label"
+                            className="block text-sm font-semibold text-gray-700 mb-1"
                           >
                             Maximum Value
                           </label>
@@ -395,66 +369,77 @@ export default function FormFieldItem({
                             id={`${field.id}-max-value`}
                             type="number"
                             value={field.max ?? ''}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               onUpdate({
-                                max: e.target.value
-                                  ? Number.parseFloat(e.target.value)
+                                max: event.currentTarget.value
+                                  ? Number.parseFloat(event.currentTarget.value)
                                   : undefined,
                               })
                             }
-                            className="form-input"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            placeholder="enter maximum value"
                           />
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`${field.id}-integer-only`}
-                          checked={field.integerOnly || false}
-                          onChange={(event) =>
-                            onUpdate({
-                              integerOnly: event.currentTarget.checked,
-                            })
-                          }
-                        />
-                        <label
-                          htmlFor={`${field.id}-integer-only`}
-                          className="form-label"
-                        >
-                          Integer values only
-                        </label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label
+                            htmlFor={`${field.id}-step`}
+                            className="block text-sm font-semibold text-gray-700 mb-1"
+                          >
+                            Step
+                          </label>
+                          <input
+                            id={`${field.id}-step`}
+                            type="number"
+                            value={field.step ?? ''}
+                            onChange={(event) =>
+                              onUpdate({
+                                step: event.currentTarget.value
+                                  ? Number.parseFloat(event.currentTarget.value)
+                                  : undefined,
+                              })
+                            }
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            placeholder="e.g. 0.01 or 1"
+                          />
+                        </div>
                       </div>
 
-                      <div className="flex items-center space-x-2">
+                      <label
+                        htmlFor={`${field.id}-positive-only`}
+                        className="inline-flex items-center cursor-pointer select-none"
+                      >
                         <input
                           type="checkbox"
                           id={`${field.id}-positive-only`}
-                          checked={field.positiveOnly || false}
+                          checked={
+                            typeof field.min === 'number' && field.min >= 0
+                          }
                           onChange={(event) =>
                             onUpdate({
-                              positiveOnly: event.currentTarget.checked,
+                              min: event.currentTarget.checked ? 0 : undefined,
                             })
                           }
+                          className="sr-only peer"
                         />
-                        <label
-                          htmlFor={`${field.id}-positive-only`}
-                          className="form-label"
-                        >
+                        <div className="relative w-11 h-6 bg-gray-400 rounded-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none" />
+                        <span className="ml-3 text-sm font-medium text-gray-900">
                           Positive values only
-                        </label>
-                      </div>
+                        </span>
+                      </label>
                     </div>
                   )}
 
                   {/* Date field validation options */}
                   {field.type === 'date' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
                           <label
                             htmlFor={`${field.id}-min-date`}
-                            className="form-label"
+                            className="block text-sm font-semibold text-gray-700 mb-1"
                           >
                             Minimum Date
                           </label>
@@ -465,13 +450,13 @@ export default function FormFieldItem({
                             onChange={(e) =>
                               onUpdate({ minDate: e.target.value || undefined })
                             }
-                            className="form-input"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
-                        <div className="space-y-2">
+                        <div>
                           <label
                             htmlFor={`${field.id}-max-date`}
-                            className="form-label"
+                            className="block text-sm font-semibold text-gray-700 mb-1"
                           >
                             Maximum Date
                           </label>
@@ -482,53 +467,9 @@ export default function FormFieldItem({
                             onChange={(e) =>
                               onUpdate({ maxDate: e.target.value || undefined })
                             }
-                            className="form-input"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`${field.id}-future-only`}
-                          checked={field.futureOnly || false}
-                          onChange={(event) =>
-                            onUpdate({
-                              futureOnly: event.currentTarget.checked,
-                              pastOnly: event.currentTarget.checked
-                                ? false
-                                : field.pastOnly,
-                            })
-                          }
-                        />
-                        <label
-                          htmlFor={`${field.id}-future-only`}
-                          className="form-label"
-                        >
-                          Future dates only
-                        </label>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`${field.id}-past-only`}
-                          checked={field.pastOnly}
-                          onChange={(event) =>
-                            onUpdate({
-                              futureOnly: event.currentTarget.checked,
-                              pastOnly: event.currentTarget.checked
-                                ? false
-                                : field.pastOnly,
-                            })
-                          }
-                        />
-                        <label
-                          htmlFor={`${field.id}-past-only`}
-                          className="form-label"
-                        >
-                          Past dates only
-                        </label>
                       </div>
                     </div>
                   )}
