@@ -20,10 +20,6 @@ export type Field = {
   // Date field validation
   minDate?: string;
   maxDate?: string;
-  futureOnly?: boolean;
-  pastOnly?: boolean;
-  minAge?: number;
-  maxAge?: number;
 };
 
 export async function up(sql: Sql) {
