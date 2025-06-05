@@ -1,5 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 type Field = {
   id: string;
   type: string;
@@ -7,52 +10,49 @@ type Field = {
   required: boolean;
   placeholder?: string;
   options?: string[];
-  value?: any;
 };
 
 type Props = {
   fields: Field[];
+  formId: number;
 };
 
-export function DynamicForm({ fields }: Props) {
+export function DynamicForm({ fields, formId }: Props) {
+  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
+
+  function handleChange(id: string, value: any) {
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  }
+
   return (
-    <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
+    <form
+      className="space-y-4"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        const response = await fetch(`/api/forms/${formId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+      }}
+    >
       {fields.map((field) => {
         switch (field.type) {
           case 'text':
-            return (
-              <div key={field.id}>
-                <label>{field.label}</label>
-                <input
-                  type="text"
-                  placeholder={field.placeholder || 'Enter text'}
-                  required={field.required}
-                  name={field.id}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-            );
           case 'number':
-            return (
-              <div key={field.id}>
-                <label>{field.label}</label>
-                <input
-                  type="number"
-                  placeholder={field.placeholder}
-                  required={field.required}
-                  name={field.id}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-            );
           case 'date':
             return (
               <div key={field.id}>
                 <label>{field.label}</label>
                 <input
-                  type="date"
+                  type={field.type}
+                  placeholder={field.placeholder || ''}
                   required={field.required}
-                  name={field.id}
+                  onChange={(event) =>
+                    handleChange(field.id, event.currentTarget.value)
+                  }
                   className="border p-2 rounded w-full"
                 />
               </div>
@@ -63,13 +63,13 @@ export function DynamicForm({ fields }: Props) {
                 <label>{field.label}</label>
                 <select
                   required={field.required}
-                  name={field.id}
+                  onChange={(event) =>
+                    handleChange(field.id, event.currentTarget.value)
+                  }
                   className="border p-2 rounded w-full"
                 >
                   {field.options?.map((option, index) => (
-                    <option key={`option-${index}`} value={option}>
-                      {option}
-                    </option>
+                    <option key={index}>{option}</option>
                   ))}
                 </select>
               </div>
@@ -78,9 +78,10 @@ export function DynamicForm({ fields }: Props) {
             return null;
         }
       })}
+
       <button
         type="submit"
-        className="w-full md:w-64 px-5 py-2.5 font-medium text-white bg-black hover:bg-neutral-900 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-black transition rounded-full"
+        className="w-full md:w-64 px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full"
       >
         Submit
       </button>
