@@ -2,8 +2,14 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2 } from 'lucide-react';
+import { Accordion } from '@radix-ui/react-accordion';
+import { GripVertical, Settings, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from './components/Accordion';
 import type { Field } from './FormBuilder';
 
 type Props = {
@@ -234,6 +240,302 @@ export default function FormFieldItem({
               </section>
             </>
           )}
+
+          {/* Add custom validation settings */}
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="validation">
+              <AccordionTrigger className="py-2">
+                <div className="flex items-center gap-2">
+                  <Settings />
+                  <span className="text-black">Validation Settings</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id={`${field.id}-required`}
+                      checked={field.required}
+                      onChange={(event) =>
+                        onUpdate({ required: event.currentTarget.checked })
+                      }
+                    />
+                    <label
+                      htmlFor={`${field.id}-required`}
+                      className="form-label"
+                    >
+                      Required field
+                    </label>
+                  </div>
+
+                  {/* Text field validation options */}
+                  {field.type === 'text' && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label
+                            htmlFor={`${field.id}-min-length`}
+                            className="form-label"
+                          >
+                            Minimum Length
+                          </label>
+                          <input
+                            id={`${field.id}-min-length`}
+                            type="number"
+                            min="0"
+                            value={field.minLength || ''}
+                            onChange={(e) =>
+                              onUpdate({
+                                minLength: e.target.value
+                                  ? Number.parseInt(e.target.value)
+                                  : undefined,
+                              })
+                            }
+                            className="form-input"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label
+                            htmlFor={`${field.id}-max-length`}
+                            className="form-label"
+                          >
+                            Maximum Length
+                          </label>
+                          <input
+                            id={`${field.id}-max-length`}
+                            type="number"
+                            min="0"
+                            value={field.maxLength || ''}
+                            onChange={(e) =>
+                              onUpdate({
+                                maxLength: e.target.value
+                                  ? Number.parseInt(e.target.value)
+                                  : undefined,
+                              })
+                            }
+                            className="form-input"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label
+                          htmlFor={`${field.id}-pattern`}
+                          className="form-label"
+                        >
+                          Custom Pattern (RegEx)
+                        </label>
+                        <input
+                          id={`${field.id}-pattern`}
+                          value={field.pattern || ''}
+                          onChange={(e) =>
+                            onUpdate({ pattern: e.target.value || undefined })
+                          }
+                          placeholder="e.g. ^[a-zA-Z0-9]+$"
+                          className="form-input"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label
+                          htmlFor={`${field.id}-pattern-message`}
+                          className="form-label"
+                        >
+                          Pattern Error Message
+                        </label>
+                        <input
+                          id={`${field.id}-pattern-message`}
+                          value={field.patternMessage || ''}
+                          onChange={(e) =>
+                            onUpdate({
+                              patternMessage: e.target.value || undefined,
+                            })
+                          }
+                          placeholder="e.g. Only alphanumeric characters allowed"
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Number field validation options */}
+                  {field.type === 'number' && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label
+                            htmlFor={`${field.id}-min-value`}
+                            className="form-label"
+                          >
+                            Minimum Value
+                          </label>
+                          <input
+                            id={`${field.id}-min-value`}
+                            type="number"
+                            value={field.min ?? ''}
+                            onChange={(e) =>
+                              onUpdate({
+                                min: e.target.value
+                                  ? Number.parseFloat(e.target.value)
+                                  : undefined,
+                              })
+                            }
+                            className="form-input"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label
+                            htmlFor={`${field.id}-max-value`}
+                            className="form-label"
+                          >
+                            Maximum Value
+                          </label>
+                          <input
+                            id={`${field.id}-max-value`}
+                            type="number"
+                            value={field.max ?? ''}
+                            onChange={(e) =>
+                              onUpdate({
+                                max: e.target.value
+                                  ? Number.parseFloat(e.target.value)
+                                  : undefined,
+                              })
+                            }
+                            className="form-input"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`${field.id}-integer-only`}
+                          checked={field.integerOnly || false}
+                          onChange={(event) =>
+                            onUpdate({
+                              integerOnly: event.currentTarget.checked,
+                            })
+                          }
+                        />
+                        <label
+                          htmlFor={`${field.id}-integer-only`}
+                          className="form-label"
+                        >
+                          Integer values only
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`${field.id}-positive-only`}
+                          checked={field.positiveOnly || false}
+                          onChange={(event) =>
+                            onUpdate({
+                              positiveOnly: event.currentTarget.checked,
+                            })
+                          }
+                        />
+                        <label
+                          htmlFor={`${field.id}-positive-only`}
+                          className="form-label"
+                        >
+                          Positive values only
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Date field validation options */}
+                  {field.type === 'date' && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label
+                            htmlFor={`${field.id}-min-date`}
+                            className="form-label"
+                          >
+                            Minimum Date
+                          </label>
+                          <input
+                            id={`${field.id}-min-date`}
+                            type="date"
+                            value={field.minDate || ''}
+                            onChange={(e) =>
+                              onUpdate({ minDate: e.target.value || undefined })
+                            }
+                            className="form-input"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label
+                            htmlFor={`${field.id}-max-date`}
+                            className="form-label"
+                          >
+                            Maximum Date
+                          </label>
+                          <input
+                            id={`${field.id}-max-date`}
+                            type="date"
+                            value={field.maxDate || ''}
+                            onChange={(e) =>
+                              onUpdate({ maxDate: e.target.value || undefined })
+                            }
+                            className="form-input"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`${field.id}-future-only`}
+                          checked={field.futureOnly || false}
+                          onChange={(event) =>
+                            onUpdate({
+                              futureOnly: event.currentTarget.checked,
+                              pastOnly: event.currentTarget.checked
+                                ? false
+                                : field.pastOnly,
+                            })
+                          }
+                        />
+                        <label
+                          htmlFor={`${field.id}-future-only`}
+                          className="form-label"
+                        >
+                          Future dates only
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`${field.id}-past-only`}
+                          checked={field.pastOnly}
+                          onChange={(event) =>
+                            onUpdate({
+                              futureOnly: event.currentTarget.checked,
+                              pastOnly: event.currentTarget.checked
+                                ? false
+                                : field.pastOnly,
+                            })
+                          }
+                        />
+                        <label
+                          htmlFor={`${field.id}-past-only`}
+                          className="form-label"
+                        >
+                          Past dates only
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </div>
     </section>

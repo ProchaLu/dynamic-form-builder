@@ -1,9 +1,12 @@
-import { getAllForms } from '../database/forms';
+import Link from 'next/link';
+import { getAllForms, getAllFormTitlesAndDates } from '../database/forms';
 import { DynamicForm } from './DynamicForm';
 import FormBuilder from './FormBuilder';
 
 export default async function Home() {
-  const forms = await getAllForms();
+  const allFormTitlesWithDates = await getAllFormTitlesAndDates();
+
+  console.log(allFormTitlesWithDates);
 
   return (
     <div className="container mx-auto py-10">
@@ -15,16 +18,35 @@ export default async function Home() {
       <FormBuilder />
       <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4 text-black pt-4 border-t">
-          Form Structure
+          Custom Forms
         </h2>
-        {forms.map((form) => (
-          <div key={form.id} className="mb-10">
-            <h2 className="text-xl font-bold mb-2">{form.name}</h2>
+        <div className="space-y-4">
+          {allFormTitlesWithDates.map((titleWithDate) => (
+            <div
+              key={``}
+              className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition"
+            >
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {titleWithDate.name}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Created on{' '}
+                    {new Date(titleWithDate.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
 
-            {/* JSON.parse is used to convert the stringified fields back to an object */}
-            <DynamicForm fields={JSON.parse(form.fields)} />
-          </div>
-        ))}
+                <Link
+                  href={`/forms/${titleWithDate.id}`}
+                  className="w-full md:w-32 text-center px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full"
+                >
+                  View Form
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

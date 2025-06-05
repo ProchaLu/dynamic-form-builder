@@ -24,3 +24,15 @@ export const getAllForms = cache(async () => {
     `;
   return result;
 });
+
+export const getAllFormTitlesAndDates = cache(async () => {
+  const result = await sql`
+      SELECT
+        id, name, created_at
+      FROM
+        forms
+      ORDER BY
+        created_at DESC
+    `;
+  return result;
+});
