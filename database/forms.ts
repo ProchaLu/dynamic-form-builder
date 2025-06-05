@@ -36,3 +36,15 @@ export const getAllFormTitlesAndDates = cache(async () => {
     `;
   return result;
 });
+
+export const getSingleFormById = cache(async (formId: number) => {
+  const [result] = await sql`
+      SELECT
+        *
+      FROM
+        forms
+      WHERE
+        id = ${formId}
+    `;
+  return result;
+});
