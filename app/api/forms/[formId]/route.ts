@@ -1,4 +1,8 @@
-import type { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { createFormSubmission } from '../../../../database/forms';
+
+export const formSchema = z.record(z.string());
 
 export type FormBodyPost =
   | {
@@ -8,10 +12,21 @@ export type FormBodyPost =
       error: string;
     };
 
+type FormParams = {
+  params: Promise<{
+    formId: string;
+  }>;
+};
+
 export async function POST(
-  request: Request,
+  request: NextRequest,
+  { params }: FormParams,
 ): Promise<NextResponse<FormBodyPost>> {
   const requestBody = await request.json();
+
+  const formId = Number((await params).formId);
+
+  console.log('request', requestBody);
 
   // validate information from client with zod
   const result = formSchema.safeParse(requestBody);
@@ -27,12 +42,14 @@ export async function POST(
     );
   }
 
-  const newForm = await createForm(result.data.name, result.data.fields);
+  console.log(result);
 
-  if (!newForm) {
+  const newFormSubmission = await createFormSubmission(formId, result.data);
+
+  if (!newFormSubmission) {
     return NextResponse.json(
       {
-        error: 'Form not created',
+        error: 'Form not submitted',
       },
       {
         status: 500,
@@ -41,6 +58,6 @@ export async function POST(
   }
 
   return NextResponse.json({
-    message: 'Form created successfully',
+    message: 'Form submitted successfully',
   });
 }

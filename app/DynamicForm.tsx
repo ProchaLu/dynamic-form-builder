@@ -63,6 +63,7 @@ export function DynamicForm({ fields, formId }: Props) {
                 <label>{field.label}</label>
                 <select
                   required={field.required}
+                  defaultValue={field.options?.[0] || ''}
                   onChange={(event) =>
                     handleChange(field.id, event.currentTarget.value)
                   }

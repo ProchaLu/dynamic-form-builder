@@ -37,6 +37,20 @@ export const getAllFormTitlesAndDates = cache(async () => {
   return result;
 });
 
+export const createFormSubmission = cache(
+  async (formId: number, submittedData: any) => {
+    const [result] = await sql`
+      INSERT INTO
+        form_submissions (form_id, submitted_data)
+      VALUES
+        (${formId}, ${JSON.stringify(submittedData)})
+      RETURNING
+        *
+    `;
+    return result;
+  },
+);
+
 export const getSingleFormById = cache(async (formId: number) => {
   const [result] = await sql`
       SELECT
