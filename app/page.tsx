@@ -6,8 +6,6 @@ import FormBuilder from './FormBuilder';
 export default async function Home() {
   const allFormTitlesWithDates = await getAllFormTitlesAndDates();
 
-  console.log(allFormTitlesWithDates);
-
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">Dynamic Form Builder</h1>

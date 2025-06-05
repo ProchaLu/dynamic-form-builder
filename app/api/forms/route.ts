@@ -33,8 +33,6 @@ export async function POST(
   // validate information from client with zod
   const result = formSchema.safeParse(requestBody);
 
-  console.log(result.error);
-
   if (!result.success) {
     return NextResponse.json(
       {

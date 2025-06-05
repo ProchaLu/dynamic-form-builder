@@ -233,7 +233,6 @@ export default function FormBuilder() {
                   body: JSON.stringify({ name: formName, fields }),
                 });
                 const data = await response.json();
-                console.log(data);
                 setFields([]);
                 setFormName('My Form');
                 setFormNameError(null);

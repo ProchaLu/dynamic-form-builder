@@ -22,16 +22,10 @@ export async function POST(
   request: NextRequest,
   { params }: FormParams,
 ): Promise<NextResponse<FormBodyPost>> {
+  const formId = Number((await params).formId);
   const requestBody = await request.json();
 
-  const formId = Number((await params).formId);
-
-  console.log('request', requestBody);
-
-  // validate information from client with zod
   const result = formSchema.safeParse(requestBody);
-
-  console.log(result.error);
 
   if (!result.success) {
     return NextResponse.json(
@@ -41,8 +35,6 @@ export async function POST(
       { status: 400 },
     );
   }
-
-  console.log(result);
 
   const newFormSubmission = await createFormSubmission(formId, result.data);
 
