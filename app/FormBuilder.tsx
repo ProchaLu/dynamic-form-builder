@@ -17,36 +17,10 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
+import type { Field } from '../migrations/00000-forms';
 import { Input } from './components/Input';
 import FieldTypeSelector from './FieldTypeSelector';
 import FormFieldItem from './FormFieldItem';
-
-export type Field = {
-  id: string;
-  type: string;
-  label: string;
-  placeholder: string;
-  required: boolean;
-  options?: string[];
-  value?: any;
-  // Text field validation
-  minLength?: number;
-  maxLength?: number;
-  pattern?: string;
-  patternMessage?: string;
-  // Number field validation
-  min?: number;
-  max?: number;
-  integerOnly?: boolean;
-  positiveOnly?: boolean;
-  // Date field validation
-  minDate?: string;
-  maxDate?: string;
-  futureOnly?: boolean;
-  pastOnly?: boolean;
-  minAge?: number;
-  maxAge?: number;
-};
 
 type FieldErrorMap = { [id: string]: { label?: string; options?: string } };
 

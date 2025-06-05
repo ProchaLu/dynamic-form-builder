@@ -1,5 +1,31 @@
 import type { Sql } from 'postgres';
 
+export type Field = {
+  id: string;
+  type: string;
+  label: string;
+  placeholder: string;
+  required: boolean;
+  options?: string[];
+  value?: any;
+  // Text field validation
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  patternMessage?: string;
+  // Number field validation
+  min?: number;
+  max?: number;
+  step?: number;
+  // Date field validation
+  minDate?: string;
+  maxDate?: string;
+  futureOnly?: boolean;
+  pastOnly?: boolean;
+  minAge?: number;
+  maxAge?: number;
+};
+
 export async function up(sql: Sql) {
   await sql`
     CREATE TABLE forms (
