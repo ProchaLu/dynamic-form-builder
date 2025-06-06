@@ -68,7 +68,7 @@ const fieldSchema = z
     placeholder: z.string().optional(),
     required: z.boolean().optional(),
     options: z.array(z.string()).optional(),
-    value: z.any(),
+    value: z.any().optional(),
   })
   // Use superRefine for custom validation logic specific to dropdown fields:
   // - One option is provided
