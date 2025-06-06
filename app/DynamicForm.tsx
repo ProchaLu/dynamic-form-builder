@@ -30,6 +30,7 @@ type Props = {
 export function DynamicForm({ fields, formId }: Props) {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string>('');
   const router = useRouter();
 
   function validateField(field: Field, value: any): string | null {
@@ -95,6 +96,7 @@ export function DynamicForm({ fields, formId }: Props) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setSubmitError('');
 
     // Validate all fields and collect errors
     const newErrors: Record<string, string> = {};
@@ -120,12 +122,14 @@ export function DynamicForm({ fields, formId }: Props) {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to submit form');
+          const errorData = await response.json();
+          setSubmitError(errorData.error || 'Failed to submit form');
+          return;
         }
 
         router.refresh();
       } catch (error) {
-        console.error('Error submitting form:', error);
+        setSubmitError('Network error. Please try again.');
       }
     }
   }
@@ -324,6 +328,12 @@ export function DynamicForm({ fields, formId }: Props) {
             return null;
         }
       })}
+
+      {submitError && (
+        <div className="text-sm text-red-700" role="alert">
+          {submitError}
+        </div>
+      )}
 
       <button
         type="submit"
