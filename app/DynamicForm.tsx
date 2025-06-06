@@ -94,51 +94,52 @@ export function DynamicForm({ fields, formId }: Props) {
     setFormData((prev) => ({ ...prev, [id]: value }));
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    setSubmitError('');
-
-    // Validate all fields and collect errors
-    const newErrors: Record<string, string> = {};
-
-    fields.forEach((field) => {
-      const error = validateField(field, formData[field.id]);
-      if (error) {
-        newErrors[field.id] = error;
-      }
-    });
-
-    // Update errors state with all errors
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const response = await fetch(`/api/forms/${formId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          setSubmitError(errorData.error || 'Failed to submit form');
-          return;
-        }
-
-        router.refresh();
-      } catch (error) {
-        setSubmitError('Network error. Please try again.');
-      }
-    }
-  }
-
   return (
     <form
       className="space-y-4"
-      onSubmit={handleSubmit}
+      onSubmit={async (event) => {
+        event.preventDefault();
+        setSubmitError('');
+
+        // Validate all fields and collect errors
+        const newErrors: Record<string, string> = {};
+
+        fields.forEach((field) => {
+          const error = validateField(field, formData[field.id]);
+          if (error) {
+            newErrors[field.id] = error;
+          }
+        });
+
+        // Update errors state with all errors
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length === 0) {
+          try {
+            const response = await fetch(`/api/forms/${formId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              setSubmitError(errorData.error || 'Failed to submit form');
+              return;
+            }
+
+            router.refresh();
+          } catch (error) {
+            setSubmitError('Network error. Please try again.');
+          }
+        }
+      }}
       aria-label="Dynamic form"
+      // noValidate is used to disable native HTML5 validation
+      // since we are handling validation manually
+      // This allows to show custom error messages
       noValidate
     >
       {fields.map((field) => {
