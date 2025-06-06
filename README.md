@@ -60,21 +60,15 @@ cd dynamic-form-builder
 pnpm install
 ```
 
-3. Create a `.env` file in the root directory:
-
-```env
-DATABASE_URL=postgres://your_username:your_password@localhost:5432/your_database
-```
+3. Create a `.env` file in the root directory
 
 4. Start the development server:
 
 ```bash
-npm run dev
+pnpm run
 ```
 
 ## Database Setup
-
-If you don't have PostgreSQL installed yet, follow the instructions from the PostgreSQL step in [UpLeveled's System Setup Instructions](https://github.com/upleveled/system-setup/blob/master/readme.md).
 
 Copy the `.env.example` file to a new file called `.env` (ignored from Git) and fill in the necessary information.
 
