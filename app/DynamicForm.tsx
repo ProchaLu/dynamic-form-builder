@@ -91,28 +91,41 @@ export function DynamicForm({ fields, formId }: Props) {
     setFormData((prev) => ({ ...prev, [id]: value }));
   }
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    // Validate all fields
+    // Validate all fields and collect errors
     const newErrors: Record<string, string> = {};
 
     fields.forEach((field) => {
       const error = validateField(field, formData[field.id]);
       if (error) {
         newErrors[field.id] = error;
-        setErrors(newErrors);
       }
     });
 
-    // If no errors, proceed with form submission
-    fetch(`/api/forms/${formId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    }).then(() => {
-      router.refresh();
-    });
+    // Update errors state with all errors
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        const response = await fetch(`/api/forms/${formId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit form');
+        }
+
+        router.refresh();
+      } catch (error) {
+        console.error('Error submitting form:', error);
+      }
+    }
   }
 
   return (
