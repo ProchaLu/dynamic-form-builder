@@ -54,29 +54,29 @@ function FormBuilderContent() {
     }
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (validateForm()) {
-      try {
-        const response = await fetch('/api/forms', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: formName, fields }),
-        });
-
-        if (response.ok) {
-          dispatch({ type: 'RESET_FORM' });
-          router.refresh();
-        }
-      } catch (error) {
-        console.error('Error saving form:', error);
-      }
-    }
-  }
-
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={async (event) => {
+          event.preventDefault();
+          if (validateForm()) {
+            try {
+              const response = await fetch('/api/forms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: formName, fields }),
+              });
+
+              if (response.ok) {
+                dispatch({ type: 'RESET_FORM' });
+                router.refresh();
+              }
+            } catch (error) {
+              console.error('Error saving form:', error);
+            }
+          }
+        }}
+      >
         <div className="mb-6">
           <label htmlFor="form-name" className="font-bold">
             Form Name

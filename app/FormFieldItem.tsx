@@ -223,6 +223,7 @@ export default function FormFieldItem({
                       // without triggering a full form submit.
                       onKeyDown={(event) => {
                         if (event.key === 'Enter' && newOption) {
+                          // Need to prevent default to avoid submitting the form
                           event.preventDefault();
                           addOption();
                         }
