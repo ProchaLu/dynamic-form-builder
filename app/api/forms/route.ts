@@ -10,6 +10,16 @@ const fieldSchema = z.object({
   required: z.boolean(),
   options: z.array(z.string()).optional(),
   value: z.any().optional(),
+  // Text field validation
+  minLength: z.number().optional(),
+  maxLength: z.number().optional(),
+  // Number field validation
+  min: z.number().optional(),
+  max: z.number().optional(),
+  step: z.number().optional(),
+  // Date field validation
+  minDate: z.string().optional(),
+  maxDate: z.string().optional(),
 });
 
 const formSchema = z.object({

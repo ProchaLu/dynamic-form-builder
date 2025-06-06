@@ -305,7 +305,7 @@ export default function FormFieldItem({
                               })
                             }
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            placeholder="enter minimum text length"
+                            placeholder="Enter minimum text length..."
                           />
                         </div>
                         <div>
@@ -327,7 +327,7 @@ export default function FormFieldItem({
                               })
                             }
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            placeholder="enter maximum text length"
+                            placeholder="Enter maximum text length..."
                           />
                         </div>
                       </div>
@@ -357,7 +357,7 @@ export default function FormFieldItem({
                               })
                             }
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            placeholder="enter minimum value"
+                            placeholder="Enter minimum value..."
                           />
                         </div>
                         <div>
@@ -379,7 +379,7 @@ export default function FormFieldItem({
                               })
                             }
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            placeholder="enter maximum value"
+                            placeholder="Enter maximum value..."
                           />
                         </div>
                       </div>
@@ -402,7 +402,7 @@ export default function FormFieldItem({
                             })
                           }
                           className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                          placeholder="enter step value"
+                          placeholder="Enter step value..."
                         />
                       </div>
                     </div>

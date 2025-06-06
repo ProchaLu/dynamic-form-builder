@@ -53,11 +53,21 @@ export function DynamicForm({ fields, formId }: Props) {
       case 'number':
         const num = Number(value);
         if (isNaN(num)) return 'Must be a number';
+
         if (field.min !== undefined && num < field.min) {
           return `Minimum value is ${field.min}`;
         }
+
         if (field.max !== undefined && num > field.max) {
           return `Maximum value is ${field.max}`;
+        }
+
+        if (field.step !== undefined) {
+          const step = Number(field.step);
+          const remainder = (num - (field.min || 0)) % step;
+          if (remainder !== 0) {
+            return `Value must be in steps of ${step}`;
+          }
         }
         break;
 
@@ -77,17 +87,6 @@ export function DynamicForm({ fields, formId }: Props) {
   }
 
   function handleChange(id: string, value: any) {
-    const field = fields.find((field) => field.id === id);
-    if (field) {
-      const error = validateField(field, value);
-      // If there's an error, set it in the errors state
-      // Otherwise, clear the error for this field
-      if (error) {
-        setErrors((prev) => ({ ...prev, [id]: error }));
-        return;
-      }
-      setErrors((prev) => ({ ...prev, [id]: '' }));
-    }
     setFormData((prev) => ({ ...prev, [id]: value }));
   }
 
