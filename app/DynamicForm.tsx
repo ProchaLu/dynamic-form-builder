@@ -45,6 +45,7 @@ export function DynamicForm({ fields, formId }: Props) {
         if (field.minLength && textValue.length < field.minLength) {
           return `Minimum length is ${field.minLength} characters (current: ${textValue.length})`;
         }
+
         if (field.maxLength && textValue.length > field.maxLength) {
           return `Maximum length is ${field.maxLength} characters (current: ${textValue.length})`;
         }
@@ -74,9 +75,11 @@ export function DynamicForm({ fields, formId }: Props) {
       case 'date':
         const date = new Date(value);
         if (isNaN(date.getTime())) return 'Invalid date';
+
         if (field.minDate && new Date(value) < new Date(field.minDate)) {
           return `Date must be after ${new Date(field.minDate).toLocaleDateString()}`;
         }
+
         if (field.maxDate && new Date(value) > new Date(field.maxDate)) {
           return `Date must be before ${new Date(field.maxDate).toLocaleDateString()}`;
         }
