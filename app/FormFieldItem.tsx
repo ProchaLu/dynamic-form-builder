@@ -5,16 +5,16 @@ import { CSS } from '@dnd-kit/utilities';
 import { Accordion } from '@radix-ui/react-accordion';
 import { GripVertical, Settings, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import type { Field } from '../migrations/00000-forms';
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from './components/Accordion';
+import type { FormField } from './context/FormContext';
 
 type Props = {
-  field: Field;
-  onUpdate: (updates: Partial<Field>) => void;
+  field: FormField;
+  onUpdate: (updates: Partial<FormField>) => void;
   onRemove: () => void;
   labelError?: string;
   optionsError?: string;
@@ -54,9 +54,7 @@ export default function FormFieldItem({
   function removeOption(value: number) {
     const existingOptions = field.options || [];
     onUpdate({
-      options: existingOptions.filter(
-        (option: string | undefined, index: number) => index !== value,
-      ),
+      options: existingOptions.filter((option, index) => index !== value),
     });
   }
 
@@ -119,7 +117,6 @@ export default function FormFieldItem({
                 id={`${field.id}-label`}
                 value={field.label}
                 placeholder="Enter field label..."
-                required
                 onChange={(event) =>
                   onUpdate({ label: event.currentTarget.value })
                 }
@@ -165,45 +162,43 @@ export default function FormFieldItem({
 
                 {/* Existing options */}
                 <ul className="space-y-2" id="dropdown-options">
-                  {field.options?.map(
-                    (option: string | undefined, index: number) => {
-                      const isThisOptionEmpty =
-                        optionsError &&
-                        optionsError.toLowerCase().includes('empty string') &&
-                        (!option || option.trim() === '');
-                      return (
-                        <li
-                          key={`option-${field.id}-${index}`}
-                          className="flex items-center gap-2"
+                  {field.options?.map((option, index) => {
+                    const isThisOptionEmpty =
+                      optionsError &&
+                      optionsError.toLowerCase().includes('empty string') &&
+                      (!option || option.trim() === '');
+                    return (
+                      <li
+                        key={`option-${field.id}-${index}`}
+                        className="flex items-center gap-2"
+                      >
+                        <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
+                          {index + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={option}
+                          onChange={(event) =>
+                            updateOption(index, event.currentTarget.value)
+                          }
+                          placeholder={`Enter option ${index + 1}`}
+                          className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" ${
+                            isThisOptionEmpty
+                              ? 'border-red-500 ring-2 ring-red-400'
+                              : 'border-gray-300'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeOption(index)}
+                          className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100"
+                          aria-label={`Remove option ${index + 1}`}
                         >
-                          <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium text-gray-600">
-                            {index + 1}
-                          </span>
-                          <input
-                            type="text"
-                            value={option}
-                            onChange={(event) =>
-                              updateOption(index, event.currentTarget.value)
-                            }
-                            placeholder={`Option ${index + 1}`}
-                            className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" ${
-                              isThisOptionEmpty
-                                ? 'border-red-500 ring-2 ring-red-400'
-                                : 'border-gray-300'
-                            }`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeOption(index)}
-                            className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100"
-                            aria-label={`Remove option ${index + 1}`}
-                          >
-                            ×
-                          </button>
-                        </li>
-                      );
-                    },
-                  )}
+                          ×
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
                 {optionsError && (
                   <div className="text-red-600 text-xs mt-1">
@@ -216,30 +211,40 @@ export default function FormFieldItem({
                   <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded text-sm font-medium text-blue-600">
                     +
                   </div>
-                  <form
-                    className="flex items-center gap-2 w-full"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      addOption();
-                    }}
-                  >
+                  <div className="flex items-center gap-2 w-full">
                     <input
                       type="text"
                       value={newOption}
                       onChange={(event) =>
                         setNewOption(event.currentTarget.value)
                       }
+                      // Use onKeyDown instead of a nested form with onSubmit to avoid hydration issues.
+                      // Since the outer component is already a form, this allows us to handle "Enter" key presses
+                      // without triggering a full form submit.
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' && newOption) {
+                          event.preventDefault();
+                          addOption();
+                        }
+                      }}
                       placeholder="Add new option..."
+                      aria-label="Add new dropdown option"
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={() => {
+                        if (newOption) {
+                          addOption();
+                        }
+                      }}
+                      aria-label="Add option"
                       className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
                       disabled={!newOption}
                     >
                       +
                     </button>
-                  </form>
+                  </div>
                 </div>
               </section>
             </>
@@ -250,14 +255,14 @@ export default function FormFieldItem({
             <AccordionItem value="validation">
               <AccordionTrigger className="py-2">
                 <div className="flex items-center gap-2">
-                  <Settings />
+                  <Settings className="h-4 w-4" />
                   <span className="text-black text-m font-semibold">
                     Validation Settings
                   </span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-4 pt-2">
+                <div className="p-4 space-y-4">
                   <label
                     htmlFor={`${field.id}-required`}
                     className="inline-flex items-center cursor-pointer select-none"
@@ -266,8 +271,8 @@ export default function FormFieldItem({
                       type="checkbox"
                       id={`${field.id}-required`}
                       checked={field.required}
-                      onChange={(e) =>
-                        onUpdate({ required: e.currentTarget.checked })
+                      onChange={(event) =>
+                        onUpdate({ required: event.currentTarget.checked })
                       }
                       className="sr-only peer"
                     />
@@ -279,20 +284,19 @@ export default function FormFieldItem({
 
                   {/* Text field validation options */}
                   {field.type === 'text' && (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label
-                            htmlFor={`${field.id}-min-length`}
-                            className="block text-sm font-semibold text-gray-700 mb-1"
+                            htmlFor={`${field.id}-minLength`}
+                            className="block text-sm font-medium text-gray-700 mb-1"
                           >
                             Minimum Length
                           </label>
                           <input
-                            id={`${field.id}-min-length`}
                             type="number"
-                            min="0"
-                            value={field.minLength ?? ''}
+                            id={`${field.id}-minLength`}
+                            value={field.minLength || ''}
                             onChange={(event) =>
                               onUpdate({
                                 minLength: event.currentTarget.value
@@ -306,16 +310,15 @@ export default function FormFieldItem({
                         </div>
                         <div>
                           <label
-                            htmlFor={`${field.id}-max-length`}
-                            className="block text-sm font-semibold text-gray-700 mb-1"
+                            htmlFor={`${field.id}-maxLength`}
+                            className="block text-sm font-medium text-gray-700 mb-1"
                           >
                             Maximum Length
                           </label>
                           <input
-                            id={`${field.id}-max-length`}
                             type="number"
-                            min="0"
-                            value={field.maxLength ?? ''}
+                            id={`${field.id}-maxLength`}
+                            value={field.maxLength || ''}
                             onChange={(event) =>
                               onUpdate({
                                 maxLength: event.currentTarget.value
@@ -333,23 +336,23 @@ export default function FormFieldItem({
 
                   {/* Number field validation options */}
                   {field.type === 'number' && (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label
-                            htmlFor={`${field.id}-min-value`}
-                            className="block text-sm font-semibold text-gray-700 mb-1"
+                            htmlFor={`${field.id}-min`}
+                            className="block text-sm font-medium text-gray-700 mb-1"
                           >
                             Minimum Value
                           </label>
                           <input
-                            id={`${field.id}-min-value`}
                             type="number"
-                            value={field.min ?? ''}
+                            id={`${field.id}-min`}
+                            value={field.min || ''}
                             onChange={(event) =>
                               onUpdate({
                                 min: event.currentTarget.value
-                                  ? Number.parseFloat(event.currentTarget.value)
+                                  ? Number(event.currentTarget.value)
                                   : undefined,
                               })
                             }
@@ -357,22 +360,21 @@ export default function FormFieldItem({
                             placeholder="enter minimum value"
                           />
                         </div>
-
                         <div>
                           <label
-                            htmlFor={`${field.id}-max-value`}
-                            className="block text-sm font-semibold text-gray-700 mb-1"
+                            htmlFor={`${field.id}-max`}
+                            className="block text-sm font-medium text-gray-700 mb-1"
                           >
                             Maximum Value
                           </label>
                           <input
-                            id={`${field.id}-max-value`}
                             type="number"
-                            value={field.max ?? ''}
+                            id={`${field.id}-max`}
+                            value={field.max || ''}
                             onChange={(event) =>
                               onUpdate({
                                 max: event.currentTarget.value
-                                  ? Number.parseFloat(event.currentTarget.value)
+                                  ? Number(event.currentTarget.value)
                                   : undefined,
                               })
                             }
@@ -381,91 +383,69 @@ export default function FormFieldItem({
                           />
                         </div>
                       </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label
-                            htmlFor={`${field.id}-step`}
-                            className="block text-sm font-semibold text-gray-700 mb-1"
-                          >
-                            Step
-                          </label>
-                          <input
-                            id={`${field.id}-step`}
-                            type="number"
-                            value={field.step ?? ''}
-                            onChange={(event) =>
-                              onUpdate({
-                                step: event.currentTarget.value
-                                  ? Number.parseFloat(event.currentTarget.value)
-                                  : undefined,
-                              })
-                            }
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            placeholder="e.g. 0.01 or 1"
-                          />
-                        </div>
-                      </div>
-
-                      <label
-                        htmlFor={`${field.id}-positive-only`}
-                        className="inline-flex items-center cursor-pointer select-none"
-                      >
+                      <div>
+                        <label
+                          htmlFor={`${field.id}-step`}
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Step Value
+                        </label>
                         <input
-                          type="checkbox"
-                          id={`${field.id}-positive-only`}
-                          checked={
-                            typeof field.min === 'number' && field.min >= 0
-                          }
+                          type="number"
+                          id={`${field.id}-step`}
+                          value={field.step || ''}
                           onChange={(event) =>
                             onUpdate({
-                              min: event.currentTarget.checked ? 0 : undefined,
+                              step: event.currentTarget.value
+                                ? Number(event.currentTarget.value)
+                                : undefined,
                             })
                           }
-                          className="sr-only peer"
+                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          placeholder="enter step value"
                         />
-                        <div className="relative w-11 h-6 bg-gray-400 rounded-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none" />
-                        <span className="ml-3 text-sm font-medium text-gray-900">
-                          Positive values only
-                        </span>
-                      </label>
+                      </div>
                     </div>
                   )}
 
                   {/* Date field validation options */}
                   {field.type === 'date' && (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label
-                            htmlFor={`${field.id}-min-date`}
-                            className="block text-sm font-semibold text-gray-700 mb-1"
+                            htmlFor={`${field.id}-minDate`}
+                            className="block text-sm font-medium text-gray-700 mb-1"
                           >
                             Minimum Date
                           </label>
                           <input
-                            id={`${field.id}-min-date`}
                             type="date"
+                            id={`${field.id}-minDate`}
                             value={field.minDate || ''}
-                            onChange={(e) =>
-                              onUpdate({ minDate: e.target.value || undefined })
+                            onChange={(event) =>
+                              onUpdate({
+                                minDate: event.currentTarget.value || undefined,
+                              })
                             }
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
                         <div>
                           <label
-                            htmlFor={`${field.id}-max-date`}
-                            className="block text-sm font-semibold text-gray-700 mb-1"
+                            htmlFor={`${field.id}-maxDate`}
+                            className="block text-sm font-medium text-gray-700 mb-1"
                           >
                             Maximum Date
                           </label>
                           <input
-                            id={`${field.id}-max-date`}
                             type="date"
+                            id={`${field.id}-maxDate`}
                             value={field.maxDate || ''}
-                            onChange={(e) =>
-                              onUpdate({ maxDate: e.target.value || undefined })
+                            onChange={(event) =>
+                              onUpdate({
+                                maxDate: event.currentTarget.value || undefined,
+                              })
                             }
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                           />

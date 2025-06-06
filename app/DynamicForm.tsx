@@ -10,6 +10,16 @@ type Field = {
   required: boolean;
   placeholder?: string;
   options?: string[];
+  // Text field validation
+  minLength?: number;
+  maxLength?: number;
+  // Number field validation
+  min?: number;
+  max?: number;
+  step?: number;
+  // Date field validation
+  minDate?: string;
+  maxDate?: string;
 };
 
 type Props = {
@@ -19,63 +29,280 @@ type Props = {
 
 export function DynamicForm({ fields, formId }: Props) {
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
 
+  function validateField(field: Field, value: any): string | null {
+    if (field.required && !value) {
+      return 'This field is required';
+    }
+
+    if (!value) return null;
+
+    switch (field.type) {
+      case 'text':
+        const textValue = String(value);
+        if (field.minLength && textValue.length < field.minLength) {
+          return `Minimum length is ${field.minLength} characters (current: ${textValue.length})`;
+        }
+        if (field.maxLength && textValue.length > field.maxLength) {
+          return `Maximum length is ${field.maxLength} characters (current: ${textValue.length})`;
+        }
+        break;
+
+      case 'number':
+        const num = Number(value);
+        if (isNaN(num)) return 'Must be a number';
+        if (field.min !== undefined && num < field.min) {
+          return `Minimum value is ${field.min}`;
+        }
+        if (field.max !== undefined && num > field.max) {
+          return `Maximum value is ${field.max}`;
+        }
+        break;
+
+      case 'date':
+        const date = new Date(value);
+        if (isNaN(date.getTime())) return 'Invalid date';
+        if (field.minDate && new Date(value) < new Date(field.minDate)) {
+          return `Date must be after ${new Date(field.minDate).toLocaleDateString()}`;
+        }
+        if (field.maxDate && new Date(value) > new Date(field.maxDate)) {
+          return `Date must be before ${new Date(field.maxDate).toLocaleDateString()}`;
+        }
+        break;
+    }
+
+    return null;
+  }
+
   function handleChange(id: string, value: any) {
+    const field = fields.find((field) => field.id === id);
+    if (field) {
+      const error = validateField(field, value);
+      // If there's an error, set it in the errors state
+      // Otherwise, clear the error for this field
+      if (error) {
+        setErrors((prev) => ({ ...prev, [id]: error }));
+        return;
+      }
+      setErrors((prev) => ({ ...prev, [id]: '' }));
+    }
     setFormData((prev) => ({ ...prev, [id]: value }));
+  }
+
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+
+    fields.forEach((field) => {
+      const error = validateField(field, formData[field.id]);
+      if (error) {
+        newErrors[field.id] = error;
+        setErrors(newErrors);
+      }
+    });
+
+    // If no errors, proceed with form submission
+    fetch(`/api/forms/${formId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    }).then(() => {
+      router.refresh();
+    });
   }
 
   return (
     <form
       className="space-y-4"
-      onSubmit={async (event) => {
-        event.preventDefault();
-        const response = await fetch(`/api/forms/${formId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-
-        router.refresh();
-      }}
+      onSubmit={handleSubmit}
+      aria-label="Dynamic form"
+      noValidate
     >
       {fields.map((field) => {
+        const error = errors[field.id];
+
         switch (field.type) {
           case 'text':
-          case 'number':
-          case 'date':
             return (
-              <div key={field.id}>
-                <label>{field.label}</label>
+              <div key={field.id} className="space-y-1">
+                <label
+                  htmlFor={`field-${field.id}`}
+                  className="block text-m font-medium text-gray-700"
+                >
+                  {field.label}
+                  {field.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
+                </label>
                 <input
-                  type={field.type}
+                  id={`field-${field.id}`}
+                  type="text"
                   placeholder={field.placeholder || ''}
                   required={field.required}
+                  minLength={field.minLength}
+                  maxLength={field.maxLength}
+                  value={formData[field.id] || ''}
                   onChange={(event) =>
                     handleChange(field.id, event.currentTarget.value)
                   }
-                  className="border p-2 rounded w-full"
+                  className={`border p-2 rounded w-full ${
+                    error ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? `error-${field.id}` : undefined}
                 />
+                {error && (
+                  <p
+                    id={`error-${field.id}`}
+                    className="text-sm text-red-600"
+                    role="alert"
+                  >
+                    {error}
+                  </p>
+                )}
+                {field.minLength && (
+                  <p className="text-xs text-gray-500">
+                    Minimum length: {field.minLength} characters
+                  </p>
+                )}
+                {field.maxLength && (
+                  <p className="text-xs text-gray-500">
+                    Maximum length: {field.maxLength} characters
+                  </p>
+                )}
               </div>
             );
+
+          case 'number':
+            return (
+              <div key={field.id} className="space-y-1">
+                <label
+                  htmlFor={`field-${field.id}`}
+                  className="block text-m font-medium text-gray-700"
+                >
+                  {field.label}
+                  {field.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
+                </label>
+                <input
+                  id={`field-${field.id}`}
+                  type="number"
+                  placeholder={field.placeholder || ''}
+                  required={field.required}
+                  min={field.min}
+                  max={field.max}
+                  step={field.step}
+                  value={formData[field.id] || ''}
+                  onChange={(event) =>
+                    handleChange(field.id, event.currentTarget.value)
+                  }
+                  className={`border p-2 rounded w-full ${
+                    error ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? `error-${field.id}` : undefined}
+                />
+                {error && (
+                  <p
+                    id={`error-${field.id}`}
+                    className="text-sm text-red-600"
+                    role="alert"
+                  >
+                    {error}
+                  </p>
+                )}
+              </div>
+            );
+
+          case 'date':
+            return (
+              <div key={field.id} className="space-y-1">
+                <label
+                  htmlFor={`field-${field.id}`}
+                  className="block text-m font-medium text-gray-700"
+                >
+                  {field.label}
+                  {field.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
+                </label>
+                <input
+                  id={`field-${field.id}`}
+                  type="date"
+                  required={field.required}
+                  min={field.minDate}
+                  max={field.maxDate}
+                  value={formData[field.id] || ''}
+                  onChange={(event) =>
+                    handleChange(field.id, event.currentTarget.value)
+                  }
+                  className={`border p-2 rounded w-full ${
+                    error ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? `error-${field.id}` : undefined}
+                />
+                {error && (
+                  <p
+                    id={`error-${field.id}`}
+                    className="text-sm text-red-600"
+                    role="alert"
+                  >
+                    {error}
+                  </p>
+                )}
+              </div>
+            );
+
           case 'dropdown':
             return (
-              <div key={field.id}>
-                <label>{field.label}</label>
+              <div key={field.id} className="space-y-1">
+                <label
+                  htmlFor={`field-${field.id}`}
+                  className="block text-m font-medium text-gray-700"
+                >
+                  {field.label}
+                  {field.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
+                </label>
                 <select
+                  id={`field-${field.id}`}
                   required={field.required}
-                  defaultValue={field.options?.[0] || ''}
+                  value={formData[field.id] || ''}
                   onChange={(event) =>
                     handleChange(field.id, event.currentTarget.value)
                   }
-                  className="border p-2 rounded w-full"
+                  className={`border p-2 rounded w-full ${
+                    error ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? `error-${field.id}` : undefined}
                 >
-                  {field.options?.map((option, index) => (
-                    <option key={index}>{option}</option>
+                  <option value="">Select an option</option>
+                  {field.options?.map((option) => (
+                    <option key={`option-${option}`} value={option}>
+                      {option}
+                    </option>
                   ))}
                 </select>
+                {error && (
+                  <p
+                    id={`error-${field.id}`}
+                    className="text-sm text-red-600"
+                    role="alert"
+                  >
+                    {error}
+                  </p>
+                )}
               </div>
             );
+
           default:
             return null;
         }
