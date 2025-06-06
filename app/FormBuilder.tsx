@@ -87,7 +87,7 @@ function FormBuilderContent() {
             value={formName}
             onChange={(event) => setFormName(event.currentTarget.value)}
             placeholder="Form name"
-            className={`w-full rounded-md px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${
+            className={`w-full rounded-md px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
               errors.name
                 ? 'border-red-500 ring-2 ring-red-400'
                 : 'border border-gray-300'

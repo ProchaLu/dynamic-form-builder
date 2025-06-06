@@ -173,7 +173,9 @@ export function DynamicForm({ fields, formId }: Props) {
                     handleChange(field.id, event.currentTarget.value)
                   }
                   className={`border p-2 rounded w-full ${
-                    error ? 'border-red-500' : 'border-gray-300'
+                    error
+                      ? 'border-red-500 ring-1 ring-red-400'
+                      : 'border-gray-300'
                   }`}
                   aria-invalid={!!error}
                   aria-describedby={error ? `error-${field.id}` : undefined}
@@ -225,7 +227,9 @@ export function DynamicForm({ fields, formId }: Props) {
                     handleChange(field.id, event.currentTarget.value)
                   }
                   className={`border p-2 rounded w-full ${
-                    error ? 'border-red-500' : 'border-gray-300'
+                    error
+                      ? 'border-red-500 ring-1 ring-red-400'
+                      : 'border-gray-300'
                   }`}
                   aria-invalid={!!error}
                   aria-describedby={error ? `error-${field.id}` : undefined}
@@ -265,7 +269,9 @@ export function DynamicForm({ fields, formId }: Props) {
                     handleChange(field.id, event.currentTarget.value)
                   }
                   className={`border p-2 rounded w-full ${
-                    error ? 'border-red-500' : 'border-gray-300'
+                    error
+                      ? 'border-red-500 ring-1 ring-red-400'
+                      : 'border-gray-300'
                   }`}
                   aria-invalid={!!error}
                   aria-describedby={error ? `error-${field.id}` : undefined}
@@ -302,7 +308,9 @@ export function DynamicForm({ fields, formId }: Props) {
                     handleChange(field.id, event.currentTarget.value)
                   }
                   className={`border p-2 rounded w-full ${
-                    error ? 'border-red-500' : 'border-gray-300'
+                    error
+                      ? 'border-red-500 ring-1 ring-red-400'
+                      : 'border-gray-300'
                   }`}
                   aria-invalid={!!error}
                   aria-describedby={error ? `error-${field.id}` : undefined}
@@ -341,7 +349,7 @@ export function DynamicForm({ fields, formId }: Props) {
 
       <button
         type="submit"
-        className="w-full px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition rounded-full"
+        className="w-full px-5 py-2.5 font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:shadow-inner focus:outline-none focus:ring-1 focus:ring-blue-400 transition rounded-full"
       >
         Submit
       </button>

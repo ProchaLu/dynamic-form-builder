@@ -122,7 +122,7 @@ export default function FormFieldItem({
                 }
                 className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" ${
                   labelError
-                    ? 'border-red-500 ring-2 ring-red-400'
+                    ? 'border-red-500 ring-1 ring-red-400'
                     : 'border-gray-300'
                 }`}
               />
@@ -184,7 +184,7 @@ export default function FormFieldItem({
                           placeholder={`Enter option ${index + 1}`}
                           className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" ${
                             isThisOptionEmpty
-                              ? 'border-red-500 ring-2 ring-red-400'
+                              ? 'border-red-500 ring-1 ring-red-400'
                               : 'border-gray-300'
                           }`}
                         />
