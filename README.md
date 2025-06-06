@@ -15,6 +15,37 @@ A modern, accessible form builder application that allows users to create, manag
 
 ## Screenshots
 
+### Dynamic Form Builder
+
+<img width="1435" alt="Form Builder Overview" src="https://github.com/user-attachments/assets/080a212b-6877-469e-97b8-6df62ad2567a" />
+
+**Form Name and Label are always required**
+<img width="1435" alt="Validation Example" src="https://github.com/user-attachments/assets/a0e7c9dd-be78-4184-abfe-fc068c12853d" />
+
+<img width="1435" alt="Dropdown Validation" src="https://github.com/user-attachments/assets/f59484b2-b544-4166-b923-76343e40b0b6" />
+
+**Submitted Forms are displayed in the Custom Forms section**
+<img width="1435" alt="Submitted Forms" src="https://github.com/user-attachments/assets/a4f36dc0-75de-4d24-b3bf-1cfcb6e22a7e" />
+
+---
+
+### Single Form Page
+
+<img width="1435" alt="Single Form Page" src="https://github.com/user-attachments/assets/d344e0e6-80a5-4d9a-93fa-02a532b60f06" />
+
+**If a field is required, the application will throw an error**
+<img width="1435" alt="Required Field Error" src="https://github.com/user-attachments/assets/5347aa1a-c66e-4aad-9f82-9064e8ba0cec" />
+<img width="1435" alt="Another Error Example" src="https://github.com/user-attachments/assets/fd424c35-1736-4077-8f2a-c8ea28f6eddf" />
+
+---
+
+### Responsive Design
+
+This app is fully responsive:
+
+<img width="217" alt="Mobile View" src="https://github.com/user-attachments/assets/2b695d69-9e43-4b53-9a93-9a5f7ee5a439" />
+
+
 ## Tech Stack
 
 - **Frontend**: Next.js, React, TypeScript
