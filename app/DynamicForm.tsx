@@ -130,6 +130,9 @@ export function DynamicForm({ fields, formId }: Props) {
               return;
             }
 
+            // Reset form data and errors after successful submission
+            setFormData({});
+            setErrors({});
             router.refresh();
           } catch (error) {
             setSubmitError('Network error. Please try again.');
