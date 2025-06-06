@@ -299,7 +299,9 @@ export function DynamicForm({ fields, formId }: Props) {
                   aria-invalid={!!error}
                   aria-describedby={error ? `error-${field.id}` : undefined}
                 >
-                  <option value="">Select an option</option>
+                  <option value="" disabled>
+                    Select an option
+                  </option>
                   {field.options?.map((option) => (
                     <option key={`option-${option}`} value={option}>
                       {option}

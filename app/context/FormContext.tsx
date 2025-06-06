@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useCallback, useContext, useReducer } from 'react';
 import { z } from 'zod';
 
 // Types
@@ -189,7 +189,7 @@ const FormContext = createContext<{
 export function FormProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(formReducer, initialState);
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const result = formSchema.safeParse({
       name: state.name,
       fields: state.fields,
@@ -221,7 +221,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
 
     dispatch({ type: 'CLEAR_ERRORS' });
     return true;
-  };
+  }, [state.name, state.fields, dispatch]);
 
   return (
     <FormContext.Provider value={{ state, dispatch, validateForm }}>
