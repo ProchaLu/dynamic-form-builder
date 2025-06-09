@@ -15,6 +15,32 @@ A modern, accessible form builder application that allows users to create, manag
 - Database integration
 - Type safety with TypeScript
 
+## Project Structure
+
+```
+dynamic-form-builder/
+├── app/                 # Next.js app directory
+│   ├── api/            # API routes
+│   │   └── forms/      # Form-related API endpoints
+│   ├── components/     # React components
+│   ├── forms/          # Form-related components
+│   └── hooks/          # Custom React hooks
+├── database/           # Database connection and queries
+├── migrations/         # Database migrations
+├── public/            # Static assets
+├── scripts/           # Utility scripts
+└── util/              # Utility functions
+```
+
+## Tech Stack
+
+- **Frontend**: Next.js, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: PostgreSQL
+- **State Management**: React Context API
+- **Form Validation**: Zod
+- **Drag and Drop**: @dnd-kit
+
 ## Screenshots
 
 ### Dynamic Form Builder
@@ -47,42 +73,67 @@ This app is fully responsive:
 
 <img width="217" alt="Mobile View" src="https://github.com/user-attachments/assets/2b695d69-9e43-4b53-9a93-9a5f7ee5a439" />
 
-## Tech Stack
+## Docker
 
-- **Frontend**: Next.js, React, TypeScript
-- **Styling**: Tailwind CSS
-- **Database**: PostgreSQL
-- **State Management**: React Context API
-- **Form Validation**: Zod
-- **Drag and Drop**: @dnd-kit
+1. Clone the repository:
 
-### Key Directories and Files
+```bash
+git clone https://github.com/prochalu/dynamic-form-builder.git
+cd dynamic-form-builder
+```
 
-- **`app/`**: Contains all the application code
+2. Build and start the containers:
 
-  - `api/`: API routes for form creation and submission
-  - `context/`: React Context for global state management
-  - `components/`: Reusable React components
-  - `lib/`: Utility functions and type definitions
+```bash
+docker-compose up --build
+```
 
-- **`migrations/`**: Database migration files
+The application will be available at `http://localhost:3000`
 
-  - Contains SQL schema changes and version control
+### Docker Commands
 
-- **`public/`**: Static assets like images and fonts
+- Start the application:
 
-- **Configuration Files**:
-  - `.env.example`: Template for environment variables
-  - `next.config.js`: Next.js configuration
-  - `tailwind.config.ts`: Tailwind CSS customization
-  - `tsconfig.json`: TypeScript compiler options
+```bash
+docker-compose up
+```
+
+- Start in detached mode:
+
+```bash
+docker-compose up -d
+```
+
+- Stop the application:
+
+```bash
+docker-compose down
+```
+
+- View logs:
+
+```bash
+docker-compose logs -f
+```
+
+- Rebuild containers:
+
+```bash
+docker-compose up --build
+```
+
+- Remove all containers and volumes:
+
+```bash
+docker-compose down -v
+```
 
 ## Installation
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/dynamic-form-builder.git
+git clone https://github.com/prochalu/dynamic-form-builder.git
 cd dynamic-form-builder
 ```
 
@@ -97,7 +148,7 @@ pnpm install
 4. Start the development server:
 
 ```bash
-pnpm run
+pnpm dev
 ```
 
 ## Database Setup
@@ -160,7 +211,7 @@ sudo -u <user name> psql -U <user name> <database name>
 
 ### State Management Evolution
 
-The application started with a simpler state management approach using `useState` hooks, but evolved to use the Context API as the application grew. This evolution demonstrates important lessons in React application architecture:
+The application started with a simpler state management approach using `useState` hooks, but evolved to use the Context API as the application grew.
 
 #### Initial Approach (useState)
 
@@ -179,10 +230,10 @@ const [formName, setFormName] = useState('');
 
 **Cons:**
 
+- Difficult to maintain as application grows
 - Prop drilling becomes an issue
 - State updates become complex
 - Hard to share state between components
-- Difficult to maintain as application grows
 
 #### Current Approach (Context API)
 
@@ -263,7 +314,6 @@ The application follows a modular component structure:
 
    - Integrated `@dnd-kit` for field reordering
    - Implemented proper touch support
-   - Added keyboard accessibility
 
 4. **Type Safety**
    - Used TypeScript for better type safety
@@ -285,23 +335,12 @@ The application follows a modular component structure:
 - [ ] Form templates
 - [ ] Custom validation rules
 - [ ] Form analytics
-- [ ] Export/import functionality
 
 ### Long Term
 
-- [ ] Multi-language support
 - [ ] Advanced form features
 - [ ] Performance optimizations
 - [ ] Mobile app
-
-## Performance Considerations
-
-### Current Optimizations
-
-- React Context for state management
-- Proper component memoization
-- Efficient database queries
-- Optimized form validation
 
 ## License
 
