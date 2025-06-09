@@ -48,7 +48,7 @@ COPY --from=builder /app/scripts ./scripts
 # Install production dependencies
 RUN pnpm install --prod
 
-# Set proper permissions BEFORE switching user
+# Set proper permissions before switching user
 RUN chmod +x ./scripts/docker-entrypoint.sh
 RUN chown -R nextjs:nodejs /app
 

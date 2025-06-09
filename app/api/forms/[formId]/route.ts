@@ -25,8 +25,6 @@ export async function POST(
   const formId = Number((await params).formId);
   const requestBody = await request.json();
 
-  console.log(requestBody);
-
   const result = formSubmissionSchema.safeParse(requestBody);
 
   if (!result.success) {
