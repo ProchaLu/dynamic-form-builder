@@ -2,7 +2,7 @@
 
 [Live Demo](https://dynamic-form-builder-cyan-kappa.vercel.app)
 
-A modern, accessible form builder application that allows users to create, manage, and submit dynamic forms. Built with Next.js, TypeScript, and PostgreSQL.
+Dynamic Form Builder lets you create, manage, and submit custom forms with drag & drop, live validation, and UI. Built with Next.js, TypeScript, and PostgreSQL.
 
 ## Features
 
