@@ -23,7 +23,7 @@ dynamic-form-builder/
 │   ├── api/            # API routes
 │   │   └── forms/      # Form-related API endpoints
 │   ├── components/     # React components
-│   ├── forms/          # Form-related components
+│   ├── forms/          # Dynamic form route (/forms/[formId])
 │   └── hooks/          # Custom React hooks
 ├── database/           # Database connection and queries
 ├── migrations/         # Database migrations
