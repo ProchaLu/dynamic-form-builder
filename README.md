@@ -73,6 +73,10 @@ This app is fully responsive:
 
 <img width="217" alt="Mobile View" src="https://github.com/user-attachments/assets/2b695d69-9e43-4b53-9a93-9a5f7ee5a439" />
 
+## Environment Variables
+
+Create a `.env` file in the root directory
+
 ## Docker
 
 1. Clone the repository:
