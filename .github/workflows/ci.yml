@@ -36,8 +36,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-      - name: Jest unit tests
-        run: pnpm jest
+      - name: Vitest unit tests
+        run: pnpm vitest
       - name: Run database migrations
         run: pnpm migrate up
       - name: Build Next.js app
