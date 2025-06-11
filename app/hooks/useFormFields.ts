@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
-import type { FieldType, FormField } from '../context/FormContext';
-import { useForm } from '../context/FormContext';
+import {
+  type FieldType,
+  type FormField,
+  useForm,
+} from '../context/FormContext';
 
 export function useFormFields() {
   const { state, dispatch } = useForm();
