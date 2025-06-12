@@ -330,8 +330,8 @@ The application follows a modular component structure:
 
 - [ ] Implement proper error boundaries
 - [ ] Add form submission success feedback
-- [ ] Add unit tests
-- [ ] Add End2End tests
+- [ ] Add more unit tests
+- [ ] Add more End2End tests
 
 ### Medium Term
 
