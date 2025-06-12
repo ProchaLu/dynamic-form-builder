@@ -1,7 +1,12 @@
 'use client';
 
-import type { ReactNode } from 'react';
-import { createContext, useCallback, useContext, useReducer } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useReducer,
+} from 'react';
 import { z } from 'zod';
 
 // Types
@@ -37,7 +42,7 @@ export type FormState = {
 };
 
 // Action Types
-type FormAction =
+export type FormAction =
   | { type: 'SET_FORM_NAME'; payload: string }
   | { type: 'ADD_FIELD'; payload: FormField }
   | { type: 'REMOVE_FIELD'; payload: string }
@@ -97,7 +102,7 @@ const formSchema = z.object({
 });
 
 // Reducer
-function formReducer(state: FormState, action: FormAction): FormState {
+export function formReducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
     case 'SET_FORM_NAME':
       return {
