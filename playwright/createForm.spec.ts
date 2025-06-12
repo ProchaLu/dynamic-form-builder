@@ -12,7 +12,7 @@ test('create and fill out form', async ({ page }) => {
     .getByRole('textbox', { name: 'Form Name' })
     .fill('This is my new Form');
 
-  await page.getByRole('button', { name: 'Add Text Field field' }).click();
+  await page.getByRole('button', { name: 'Add Text Field' }).click();
 
   await page.getByRole('button', { name: 'Validation Settings' }).click();
   await page
@@ -56,7 +56,7 @@ test('create and fill out form', async ({ page }) => {
     .nth(2)
     .click();
 
-  await page.getByRole('button', { name: 'Add Dropdown Field field' }).click();
+  await page.getByRole('button', { name: 'Add Dropdown Field' }).click();
 
   await page
     .locator('section')
